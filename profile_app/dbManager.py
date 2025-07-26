@@ -51,6 +51,8 @@ class DbManager:
             print(f"Error: {e}")
 
     def find_by_id(self, pid):
+        if isinstance(pid, str):
+            pid = ObjectId(pid)
         return self.collection.find_one({"_id": pid})
 
     def profile_exists(self, profile_json) -> bool:
