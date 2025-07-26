@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any
+from bson import ObjectId
 
 from pymongo import MongoClient
 
@@ -12,7 +13,7 @@ class DbManager:
 
     def __init__(self):
 
-        global client
+        client = None
         try:
             client = MongoClient('localhost', 27017)
             self.db = client[self.db_name]
@@ -20,7 +21,7 @@ class DbManager:
         except Exception as e:
             print(f"Error: {e}")
         finally:
-            if client is not None:
+            if client is None:
                 client.close()
                 print("Database connection closed")
 
@@ -49,8 +50,14 @@ class DbManager:
             # Handling exceptions and printing an error message if data insertion fails
             print(f"Error: {e}")
 
-    def find_one(self, pid):
+    def find_by_id(self, pid):
         return self.collection.find_one({"_id": pid})
+
+    def profile_exists(self, profile_json) -> bool:
+        return self.collection.find_one(profile_json) is not None
+
+    def profile_exists_by_name(self, profile_json) -> bool:
+        return self.collection.find_one({"name": profile_json["name"]}) is not None
 
     def find_all_profiles(self):
         return self.collection.find()
@@ -67,5 +74,8 @@ class DbManager:
         }
         self.collection.update_one({"_id": pid}, {"$set": data})
 
-    def delete_one(self, cid):
-        return self.collection.delete_one({"_id": cid})
+    def delete_one(self, pid):
+        if isinstance(pid, str):
+            pid = ObjectId(pid)
+        self.collection.delete_one({"_id": pid})
+        return self.collection.delete_one({"_id": pid})

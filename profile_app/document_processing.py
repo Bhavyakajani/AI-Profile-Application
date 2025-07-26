@@ -11,7 +11,7 @@ def load_file(path):
     if path.endswith(".pdf"):
         loader = PyPDFLoader(path)
         pages = loader.load()
-        print(pages)
+        # print(pages)
         return pages
     elif path.endswith(".pptx"):
         prs = Presentation(path)
@@ -22,13 +22,13 @@ def load_file(path):
                 for paragraph in shape.text_frame.paragraphs:
                     for run in paragraph.runs:
                         text_runs.append(run.text)
-                        print(text_runs)
+                        # print(text_runs)
         return text_runs
     elif path.endswith('.jpg') or path.endswith('.jpeg') or path.endswith('.png'):
             image = cv2.imread(path)
             if image is not None:
                 text = pytesseract.image_to_string(image)
-                print(text)
+                # print(text)
             return text
     else:
         print("Incorrect file FORMAT, only supported file formats are pdf, jpg, jpeg, pptx, png.")
