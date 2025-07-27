@@ -62,7 +62,7 @@ class DbManager:
         return self.collection.find_one({"name": profile_json["name"]}) is not None
 
     def find_all_profiles(self):
-        return self.collection.find()
+        return self.collection.find().to_list(10)
 
     def update_profile(self, pid, profile):
         data = {
