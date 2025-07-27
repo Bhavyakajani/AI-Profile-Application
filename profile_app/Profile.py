@@ -40,4 +40,8 @@ class ProfileModel(BaseModel):
     #Years of Experience
     YoE: Optional[str] =  None
 
+class ProfilesCollection(BaseModel):
+    """List of all the Profiles"""
+    profiles: List[ProfileModel]
+
 
