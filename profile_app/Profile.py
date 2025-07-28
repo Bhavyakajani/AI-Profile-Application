@@ -1,6 +1,11 @@
 from datetime import date
-from pydantic import BaseModel, Field
+
+from bson import ObjectId
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Union, List, Dict, Optional
+
+from profile_app.object_id import PyObjectId
+
 
 class Education(BaseModel):
     degree: Optional[str] = None
@@ -40,8 +45,23 @@ class ProfileModel(BaseModel):
     #Years of Experience
     YoE: Optional[str] =  None
 
+
 class ProfilesCollection(BaseModel):
     """List of all the Profiles"""
     profiles: List[ProfileModel]
+
+
+
+class ShowProfile(ProfileModel):
+    id: PyObjectId = Field(alias="_id")  # This maps Mongo’s `_id` to `id` in response
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {
+            ObjectId: str,
+        }
+
 
 

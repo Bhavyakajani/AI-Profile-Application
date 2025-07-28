@@ -12,7 +12,7 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException, Body, status, Response
 from bson import ObjectId
 from profile_app.dbManager import DbManager
-from profile_app.Profile import ProfileModel, ProfilesCollection
+from profile_app.Profile import ProfileModel, ProfilesCollection, ShowProfile
 
 app = FastAPI()
 """Running on port 8001 by --port 8001"""
@@ -50,7 +50,7 @@ def get_profile_stats():
 
 
 @app.delete('/profile/{id}', status_code=status.HTTP_204_NO_CONTENT)
-def delete_profile_by_id(id,response: Response):
+def delete_profile_by_id(id, response: Response):
     if not ObjectId.is_valid(id):
         response.status_code = status.HTTP_400_BAD_REQUEST
         raise HTTPException(status_code=400, detail="Invalid ObjectId")
@@ -59,14 +59,21 @@ def delete_profile_by_id(id,response: Response):
         return Response(status_code=204)
     raise HTTPException(status_code=404, detail=f"Profile {id} not found")
 
+
 @app.patch('/profile/{id}', status_code=202)
-def update_profile(id, response: Response):
+def update_profile(id: str, profile: ProfileModel, response: Response):
     if not ObjectId.is_valid(id):
-        response.status_code = status.HTTP_400_BAD_REQUEST
         raise HTTPException(status_code=400, detail="Invalid ObjectId")
 
+    update_result = db.update_profile(ObjectId(id), profile.model_dump())
 
-@app.get('/profile/{id}', status_code=200)
+    if update_result:
+        update_result["_id"] = str(update_result["_id"])
+        return {"message": f"Profile {id} updated successfully", "updated_data": update_result}
+    else:
+        raise HTTPException(status_code=404, detail=f"Profile {id} not found")
+
+@app.get('/profile/{id}', status_code=200, response_model=ShowProfile)
 def get_profile_by_id(id: str, response: Response):
     if not ObjectId.is_valid(id):
         response.status_code = status.HTTP_400_BAD_REQUEST
@@ -75,7 +82,7 @@ def get_profile_by_id(id: str, response: Response):
     if profile is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         raise HTTPException(status_code=404, detail=f"Profile with id: {id} not found")
-    return str(profile)
+    return profile
 # return {'profile_id': id}
 
 @app.get('/profile/{id}/notes')
