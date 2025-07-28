@@ -8,12 +8,13 @@
 # def index():
 #     return "Hello World!"
 # -----------FAST API-----------------------
-from typing import Optional, List
+from typing import List
 from fastapi import FastAPI, HTTPException, Body, status, Response
 from bson import ObjectId
 from profile_app.dbManager import DbManager
 from profile_app.Profile import ProfileModel, ProfilesCollection, ShowProfile, User, UserResponse
 from passlib.context import CryptContext
+from profile_app.hashing import hash
 
 app = FastAPI()
 """Running on port 8001 by --port 8001"""
@@ -83,12 +84,12 @@ def get_profile_by_id(id: str, response: Response):
 def create_user(user: User):
     if user:
         user_dict = user.model_dump()
-        user_dict["password"] = pwd_context.hash(user_dict["password"])
-        print(user_dict["password"])
+        user_dict = hash(user_dict)
         new_user = user_db.insert_user(user_dict)
         return UserResponse(user_id=new_user)
     else:
         raise HTTPException(status_code=402, detail='Bad Request: Invalid Profile Details')
+
 
 @app.delete('/user/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(id, response: Response):
