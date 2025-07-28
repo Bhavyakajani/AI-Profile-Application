@@ -53,7 +53,7 @@ class ProfilesCollection(BaseModel):
 
 
 class ShowProfile(ProfileModel):
-    id: PyObjectId = Field(alias="_id")  # This maps Mongo’s `_id` to `id` in response
+    # id: PyObjectId = Field(alias="_id")  # This maps Mongo’s `_id` to `id` in response
 
     class Config:
         from_attributes = True

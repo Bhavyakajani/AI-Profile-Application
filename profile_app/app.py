@@ -8,7 +8,7 @@
 # def index():
 #     return "Hello World!"
 # -----------FAST API-----------------------
-from typing import Optional
+from typing import Optional, List
 from fastapi import FastAPI, HTTPException, Body, status, Response
 from bson import ObjectId
 from profile_app.dbManager import DbManager
@@ -28,10 +28,10 @@ def index(limit: Optional[int] = 10, has_notes: Optional[bool] = False, sort: Op
         return{"data": f"{limit} Profiles without notes"}
 
 
-@app.get("/profiles")
+@app.get("/profiles", response_model=List[ShowProfile])
 def get_all_profiles():
     profiles = db.find_all_profiles()
-    return ProfilesCollection(profiles = profiles)
+    return profiles
 
 @app.post('/parse', response_model=ProfileModel, status_code=status.HTTP_201_CREATED)
 def create_profile(profile: ProfileModel):
@@ -83,7 +83,6 @@ def get_profile_by_id(id: str, response: Response):
         response.status_code = status.HTTP_404_NOT_FOUND
         raise HTTPException(status_code=404, detail=f"Profile with id: {id} not found")
     return profile
-# return {'profile_id': id}
 
 @app.get('/profile/{id}/notes')
 def notes_for_profile(id: str):
