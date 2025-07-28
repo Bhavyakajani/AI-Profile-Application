@@ -12,9 +12,9 @@ from typing import List
 from fastapi import FastAPI, HTTPException, Body, status, Response
 from bson import ObjectId
 from profile_app.dbManager import DbManager
-from profile_app.Profile import ProfileModel, ProfilesCollection, ShowProfile, User, UserResponse
+from profile_app.Profile import ProfileModel, ShowProfile, User, ShowUser
 from passlib.context import CryptContext
-from profile_app.hashing import hash
+from profile_app.hashing import hash_password
 
 app = FastAPI()
 """Running on port 8001 by --port 8001"""
@@ -80,13 +80,13 @@ def get_profile_by_id(id: str, response: Response):
         raise HTTPException(status_code=404, detail=f"Profile with id: {id} not found")
     return profile
 
-@app.post('/user', response_model=UserResponse)
+@app.post('/user', response_model=ShowUser)
 def create_user(user: User):
     if user:
         user_dict = user.model_dump()
-        user_dict = hash(user_dict)
+        user_dict = hash_password(user_dict)
         new_user = user_db.insert_user(user_dict)
-        return UserResponse(user_id=new_user)
+        return ShowUser(name = user.name, email=user.email)
     else:
         raise HTTPException(status_code=402, detail='Bad Request: Invalid Profile Details')
 

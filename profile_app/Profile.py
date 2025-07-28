@@ -68,9 +68,10 @@ class ShowProfile(ProfileModel):
             ObjectId: str,
         }
 
-class UserResponse(BaseModel):
+class ShowUser(BaseModel):
     """Response Model for User"""
-    user_id: PyObjectId
+    name: str
+    email: str
     class Config:
         from_attributes = True
         populate_by_name = True
