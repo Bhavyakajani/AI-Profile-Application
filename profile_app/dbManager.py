@@ -79,5 +79,4 @@ class DbManager:
     def delete_one(self, pid):
         if isinstance(pid, str):
             pid = ObjectId(pid)
-        self.collection.delete_one({"_id": pid})
         return self.collection.delete_one({"_id": pid})
