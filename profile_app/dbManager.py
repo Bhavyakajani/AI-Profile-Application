@@ -8,16 +8,15 @@ from pymongo import MongoClient, ReturnDocument
 
 class DbManager:
     db_name = "ProfileDB"
-    collection_name = "candidates"
     client = None
 
-    def __init__(self):
+    def __init__(self, collection_name):
 
         client = None
         try:
             client = MongoClient('localhost', 27017)
             self.db = client[self.db_name]
-            self.collection = self.db[self.collection_name]
+            self.collection = self.db[collection_name]
         except Exception as e:
             print(f"Error: {e}")
         finally:
@@ -80,3 +79,15 @@ class DbManager:
         if isinstance(pid, str):
             pid = ObjectId(pid)
         return self.collection.delete_one({"_id": pid})
+
+    def insert_user(self, data: dict) -> Any | None:
+        print(data["password"])
+        try:
+            result = self.collection.insert_one(data)
+            uid = result.inserted_id
+            print(f"User created with ID: {uid}")
+            return uid
+        except Exception as e:
+            print(f"Insert error: {e}")
+
+

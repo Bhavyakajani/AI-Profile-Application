@@ -50,9 +50,14 @@ class ProfilesCollection(BaseModel):
     """List of all the Profiles"""
     profiles: List[ProfileModel]
 
+class User(BaseModel):
+    name: str
+    email: str
+    password: str
 
 
 class ShowProfile(ProfileModel):
+    """Response Model for Profiles"""
     # id: PyObjectId = Field(alias="_id")  # This maps Mongo’s `_id` to `id` in response
 
     class Config:
@@ -62,6 +67,21 @@ class ShowProfile(ProfileModel):
         json_encoders = {
             ObjectId: str,
         }
+
+class UserResponse(BaseModel):
+    """Response Model for User"""
+    user_id: PyObjectId
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {
+            ObjectId: str,
+        }
+
+
+
+
 
 
 

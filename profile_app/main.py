@@ -4,7 +4,7 @@ import os
 
 
 def main():
-    database = db.DbManager()
+    database = db.DbManager("candidates")
     folder_path = "./data"
 
     for filename in os.listdir(folder_path):

@@ -1,1 +1,2 @@
-ruff
+passlib
+bcrypt==4.0.1
