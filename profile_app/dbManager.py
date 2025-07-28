@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 from bson import ObjectId
 
-from pymongo import MongoClient
+from pymongo import MongoClient, ReturnDocument
 
 
 class DbManager:
@@ -74,7 +74,7 @@ class DbManager:
             "work_experiences": profile['work_experiences'],
             "YoE": profile['YoE']
         }
-        self.collection.update_one({"_id": pid}, {"$set": data})
+        return self.collection.find_one_and_update({"_id": pid}, {"$set": data}, return_document=ReturnDocument.AFTER)
 
     def delete_one(self, pid):
         if isinstance(pid, str):
