@@ -26,12 +26,12 @@ pwd_context = CryptContext(schemes=['bcrypt'], deprecated = "auto")
 
 
 
-@app.get("/profiles", response_model=List[ShowProfile])
+@app.get("/profiles", response_model=List[ShowProfile], tags=['Profiles'])
 def get_all_profiles():
     profiles = profile_db.find_all_profiles()
     return profiles
 
-@app.post('/parse', response_model=ProfileModel, status_code=status.HTTP_201_CREATED)
+@app.post('/parse', response_model=ProfileModel, status_code=status.HTTP_201_CREATED, tags=['Profiles'])
 def create_profile(profile: ProfileModel):
     if profile is None:
         raise HTTPException(status_code=402, detail='Bad Request: Invalid Profile Details')
@@ -45,7 +45,7 @@ def create_profile(profile: ProfileModel):
 # Because fo dynamic routing and the fact that it can detect id as string, it is better to move the function above it.
 
 
-@app.delete('/profile/{id}', status_code=status.HTTP_204_NO_CONTENT)
+@app.delete('/profile/{id}', status_code=status.HTTP_204_NO_CONTENT, tags=['Profiles'])
 def delete_profile_by_id(id, response: Response):
     if not ObjectId.is_valid(id):
         response.status_code = status.HTTP_400_BAD_REQUEST
@@ -56,7 +56,7 @@ def delete_profile_by_id(id, response: Response):
     raise HTTPException(status_code=404, detail=f"Profile {id} not found")
 
 
-@app.patch('/profile/{id}', status_code=202)
+@app.patch('/profile/{id}', status_code=202, tags=['Profiles'])
 def update_profile(id: str, profile: ProfileModel):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid ObjectId")
@@ -69,7 +69,7 @@ def update_profile(id: str, profile: ProfileModel):
     else:
         raise HTTPException(status_code=404, detail=f"Profile {id} not found")
 
-@app.get('/profile/{id}', status_code=200, response_model=ShowProfile)
+@app.get('/profile/{id}', status_code=200, response_model=ShowProfile, tags=['Profiles'])
 def get_profile_by_id(id: str, response: Response):
     if not ObjectId.is_valid(id):
         response.status_code = status.HTTP_400_BAD_REQUEST
@@ -80,7 +80,7 @@ def get_profile_by_id(id: str, response: Response):
         raise HTTPException(status_code=404, detail=f"Profile with id: {id} not found")
     return profile
 
-@app.post('/user', response_model=ShowUser)
+@app.post('/user', response_model=ShowUser, tags=['Users'])
 def create_user(user: User):
     if user:
         user_dict = user.model_dump()
@@ -91,7 +91,7 @@ def create_user(user: User):
         raise HTTPException(status_code=402, detail='Bad Request: Invalid Profile Details')
 
 
-@app.delete('/user/{id}', status_code=status.HTTP_204_NO_CONTENT)
+@app.delete('/user/{id}', status_code=status.HTTP_204_NO_CONTENT, tags=['Users'])
 def delete_user(id, response: Response):
     if not ObjectId.is_valid(id):
         response.status_code = status.HTTP_400_BAD_REQUEST
@@ -101,7 +101,7 @@ def delete_user(id, response: Response):
         return Response(status_code=204)
     raise HTTPException(status_code=404, detail=f"Profile {id} not found")
 
-@app.get('/user/{id}', status_code=status.HTTP_200_OK, response_model=ShowUser)
+@app.get('/user/{id}', status_code=status.HTTP_200_OK, response_model=ShowUser, tags=['Users'])
 def get_user(id):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid User Id")
@@ -110,7 +110,7 @@ def get_user(id):
         raise HTTPException(status_code=404, detail=f"User {id} not found")
     return ShowUser(name=user["name"], email=user["email"])
 
-@app.patch('/user/{id}', response_model=UpdateUserResponse)
+@app.patch('/user/{id}', response_model=UpdateUserResponse, tags=['Users'])
 def update_user(id, user: User):
     oid_user = ObjectId(id)
     if not oid_user.is_valid(id):
