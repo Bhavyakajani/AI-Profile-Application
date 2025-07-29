@@ -80,6 +80,10 @@ class ShowUser(BaseModel):
             ObjectId: str,
         }
 
+class UpdateUserResponse(BaseModel):
+    message: str
+    updated_data: dict
+
 
 
 

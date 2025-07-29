@@ -12,7 +12,7 @@ from typing import List
 from fastapi import FastAPI, HTTPException, Body, status, Response
 from bson import ObjectId
 from profile_app.dbManager import DbManager
-from profile_app.Profile import ProfileModel, ShowProfile, User, ShowUser
+from profile_app.Profile import ProfileModel, ShowProfile, User, ShowUser, UpdateUserResponse
 from passlib.context import CryptContext
 from profile_app.hashing import hash_password
 
@@ -57,7 +57,7 @@ def delete_profile_by_id(id, response: Response):
 
 
 @app.patch('/profile/{id}', status_code=202)
-def update_profile(id: str, profile: ProfileModel, response: Response):
+def update_profile(id: str, profile: ProfileModel):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid ObjectId")
 
@@ -100,5 +100,30 @@ def delete_user(id, response: Response):
     if delete_result.deleted_count == 1:
         return Response(status_code=204)
     raise HTTPException(status_code=404, detail=f"Profile {id} not found")
+
+@app.get('/user/{id}', status_code=status.HTTP_200_OK, response_model=ShowUser)
+def get_user(id):
+    if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=400, detail="Invalid User Id")
+    user = user_db.find_by_id(id)
+    if user is None:
+        raise HTTPException(status_code=404, detail=f"User {id} not found")
+    return ShowUser(name=user["name"], email=user["email"])
+
+@app.patch('/user/{id}', response_model=UpdateUserResponse)
+def update_user(id, user: User):
+    oid_user = ObjectId(id)
+    if not oid_user.is_valid(id):
+        raise HTTPException(status_code=400, detail="Invalid User Id")
+    user_dict = hash_password(user.model_dump())
+    new_user = user_db.update_user(oid_user, user_dict)
+
+    if new_user:
+        new_user["_id"] = str(new_user["_id"])
+        return UpdateUserResponse(message = f"User {id} updated successfully", updated_data = new_user)
+    else:
+        raise HTTPException(status_code=404, detail=f"Profile {id} not found")
+
+
 
 

@@ -63,7 +63,7 @@ class DbManager:
     def find_all_profiles(self):
         return self.collection.find().to_list(10)
 
-    def update_profile(self, pid, profile):
+    def update_profile(self, pid, profile) -> dict :
         data = {
             "name": profile['name'],
             "contact_number": profile['contact_number'],
@@ -90,4 +90,13 @@ class DbManager:
         except Exception as e:
             print(f"Insert error: {e}")
 
+    def update_user(self, oid_user, user) -> dict :
+        new_user = {
+            "name": user["name"],
+            "email": user["email"],
+            "password": user["password"]
+        }
+        return self.collection.find_one_and_update(
+            {"_id": oid_user}, {"$set": new_user}, return_document=ReturnDocument.AFTER
+        )
 
