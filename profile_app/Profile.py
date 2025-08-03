@@ -27,7 +27,7 @@ class Skills(BaseModel):
     skills: List[str]
 
 class ProfileModel(BaseModel):
-    """A complete profile information extracted from the resume."""
+    """A complete profile information extracted from the résumé."""
     #Personal Information
     name: Optional[str] = None
     contact_number: Optional[str] = None
@@ -44,8 +44,9 @@ class ProfileModel(BaseModel):
 
     #Years of Experience
     YoE: Optional[str] =  None
+    #Creator(Some User)
+    creator_id : Optional[str] = None
 
-    user_id: Optional[List[str]] = Field(default_factory=list)
 
 
 class ProfilesCollection(BaseModel):
@@ -56,14 +57,17 @@ class User(BaseModel):
     name: str
     email: str
     password: str
-    # Bookmarked Profiles as a list. Many-to-Many relations: Users-Profiles
-    bookmarked_id : Optional[List[str]]
+    profiles: Optional[ProfilesCollection] = []
 
+class Creator(BaseModel):
+    name: str
+    email: str
 
-class ShowProfile(ProfileModel):
+class ShowProfile(BaseModel):
     """Response Model for Profiles"""
     # id: PyObjectId = Field(alias="_id")  # This maps Mongo’s `_id` to `id` in response
-
+    profile: ProfileModel
+    creator: Creator
     class Config:
         from_attributes = True
         populate_by_name = True
@@ -87,6 +91,8 @@ class ShowUser(BaseModel):
 class UpdateUserResponse(BaseModel):
     message: str
     updated_data: dict
+
+
 
 
 

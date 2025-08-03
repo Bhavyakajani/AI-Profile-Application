@@ -75,10 +75,19 @@ def get_profile_by_id(id: str, response: Response):
         response.status_code = status.HTTP_400_BAD_REQUEST
         raise HTTPException(status_code=400, detail="Invalid ObjectId")
     profile = profile_db.find_by_id(pid=id)
+
+    creator_id = profile.get("creator_id")
+    creator = user_db.find_by_id(pid=creator_id)
+
+    # Validation
     if profile is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         raise HTTPException(status_code=404, detail=f"Profile with id: {id} not found")
-    return profile
+    if creator is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        raise HTTPException(status_code=404, detail=f"Creator with id: {creator_id} not found")
+
+    return ShowProfile(profile=profile, creator=creator)
 
 @app.post('/user', response_model=ShowUser, tags=['Users'])
 def create_user(user: User):
