@@ -35,7 +35,7 @@ def get_all_profiles():
 def create_profile(profile: ProfileModel):
     if profile is None:
         raise HTTPException(status_code=402, detail='Bad Request: Invalid Profile Details')
-    pid = profile_db.insert_profile(profile.model_dump())
+    pid = profile_db.insert_profile(profile)
     if pid:
         return {"profile_id": pid}
     else:
@@ -61,7 +61,7 @@ def update_profile(id: str, profile: ProfileModel):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid ObjectId")
 
-    update_result = profile_db.update_profile(ObjectId(id), profile.model_dump())
+    update_result = profile_db.update_profile(ObjectId(id), profile)
 
     if update_result:
         update_result["_id"] = str(update_result["_id"])

@@ -5,6 +5,8 @@ from bson import ObjectId
 
 from pymongo import MongoClient, ReturnDocument
 
+from profile_app.Profile import ProfileModel
+
 
 class DbManager:
     db_name = "ProfileDB"
@@ -27,21 +29,10 @@ class DbManager:
     def get_db_client(self):
         return self.client
 
-    def insert_profile(self, profile) -> Any | None:
+    def insert_profile(self, profile: ProfileModel) -> Any | None:
         try:
-            # Creating a dictionary with student details
-            data = {
-                "name": profile['name'],
-                "contact_number": profile['contact_number'],
-                "email": profile['email'],
-                "skills": profile['skills'],
-                "educations": profile['educations'],
-                "work_experiences": profile['work_experiences'],
-                "YoE": profile['YoE']
-            }
-
-            # Inserting the candidate data into the 'candidates' collection and obtaining the inserted ID
-            pid = self.collection.insert_one(data).inserted_id
+            # Inserting the candidate data into the 'candidates' collection and getting the inserted ID
+            pid = self.collection.insert_one(profile.model_dump()).inserted_id
             # Printing a message indicating the successful insertion of data with the obtained ID
             print(f"Data inserted with ID: {pid}")
             return pid
@@ -63,24 +54,15 @@ class DbManager:
     def find_all_profiles(self):
         return self.collection.find().to_list(10)
 
-    def update_profile(self, pid, profile) -> dict :
-        data = {
-            "name": profile['name'],
-            "contact_number": profile['contact_number'],
-            "email": profile['email'],
-            "skills": profile['skills'],
-            "educations": profile['educations'],
-            "work_experiences": profile['work_experiences'],
-            "YoE": profile['YoE']
-        }
-        return self.collection.find_one_and_update({"_id": pid}, {"$set": data}, return_document=ReturnDocument.AFTER)
+    def update_profile(self, pid, profile: ProfileModel) -> dict :
+        return self.collection.find_one_and_update({"_id": pid}, {"$set": profile.model_dump()}, return_document=ReturnDocument.AFTER)
 
     def delete_one(self, pid):
         if isinstance(pid, str):
             pid = ObjectId(pid)
         return self.collection.delete_one({"_id": pid})
 
-    def insert_user(self, data: dict) -> Any | None:
+    def insert_user(self, data: dict) -> Any | Exception |None:
         print(data["password"])
         try:
             result = self.collection.insert_one(data)
@@ -91,12 +73,7 @@ class DbManager:
             print(f"Insert error: {e}")
 
     def update_user(self, oid_user, user) -> dict :
-        new_user = {
-            "name": user["name"],
-            "email": user["email"],
-            "password": user["password"]
-        }
         return self.collection.find_one_and_update(
-            {"_id": oid_user}, {"$set": new_user}, return_document=ReturnDocument.AFTER
+            {"_id": oid_user}, {"$set": user}, return_document=ReturnDocument.AFTER
         )
 

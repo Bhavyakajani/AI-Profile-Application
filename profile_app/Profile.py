@@ -45,6 +45,8 @@ class ProfileModel(BaseModel):
     #Years of Experience
     YoE: Optional[str] =  None
 
+    user_id: Optional[List[str]] = Field(default_factory=list)
+
 
 class ProfilesCollection(BaseModel):
     """List of all the Profiles"""
@@ -54,6 +56,8 @@ class User(BaseModel):
     name: str
     email: str
     password: str
+    # Bookmarked Profiles as a list. Many-to-Many relations: Users-Profiles
+    bookmarked_id : Optional[List[str]]
 
 
 class ShowProfile(ProfileModel):
