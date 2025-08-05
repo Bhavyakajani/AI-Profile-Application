@@ -5,7 +5,7 @@ from bson import ObjectId
 
 from pymongo import MongoClient, ReturnDocument
 
-from profile_app.Profile import ProfileModel
+from profile_app.models import ProfileModel
 
 
 class DbManager:
@@ -77,3 +77,5 @@ class DbManager:
             {"_id": oid_user}, {"$set": user}, return_document=ReturnDocument.AFTER
         )
 
+profile_db = DbManager("candidates")
+user_db = DbManager("users")

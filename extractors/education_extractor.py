@@ -3,7 +3,7 @@
 from extractors.base_extractor import BaseExtractor
 from typing import Type, Any, Dict
 from pydantic import BaseModel
-from profile_app.Profile import Education
+from profile_app.models import Education
 
 class EducationExtractor(BaseExtractor):
     """Extract education details from text"""

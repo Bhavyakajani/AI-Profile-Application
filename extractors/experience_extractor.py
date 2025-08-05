@@ -1,7 +1,7 @@
 from extractors.base_extractor import BaseExtractor
 from typing import Type, Any, Dict
 from pydantic import BaseModel
-from profile_app.Profile import WorkExperience
+from profile_app.models import WorkExperience
 
 class ExperienceExtractor(BaseExtractor):
     """Extract work experience from text"""

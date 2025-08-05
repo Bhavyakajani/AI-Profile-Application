@@ -63,11 +63,10 @@ class Creator(BaseModel):
     name: str
     email: str
 
-class ShowProfile(BaseModel):
+class ShowProfile(ProfileModel):
     """Response Model for Profiles"""
     # id: PyObjectId = Field(alias="_id")  # This maps Mongo’s `_id` to `id` in response
-    profile: ProfileModel
-    creator: Creator
+    creator: Optional[Creator]
     class Config:
         from_attributes = True
         populate_by_name = True
