@@ -5,16 +5,20 @@ from fastapi import APIRouter, HTTPException, status, Response
 
 from profile_app.dbManager import profile_db, user_db
 from profile_app.models import ShowProfile, ProfileModel
+import profile_app.utils.app_util as util
 
-router = APIRouter()
+router = APIRouter(
+    prefix='/profile',
+    tags=['Profiles']
+)
 
 
-@router.get("/profiles", response_model=List[ShowProfile], tags=['Profiles'])
+@router.get("/", response_model=List[ShowProfile])
 def get_all_profiles():
     profiles = profile_db.find_all_profiles()
     return profiles
 
-@router.post('/parse', response_model=ProfileModel, status_code=status.HTTP_201_CREATED, tags=['Profiles'])
+@router.post('/', response_model=ProfileModel, status_code=status.HTTP_201_CREATED)
 def create_profile(profile: ProfileModel):
     if profile is None:
         raise HTTPException(status_code=402, detail='Bad Request: Invalid Profile Details')
@@ -24,20 +28,20 @@ def create_profile(profile: ProfileModel):
     else:
         raise HTTPException(status_code=400)
 
-@router.delete('/profile/{id}', status_code=status.HTTP_204_NO_CONTENT, tags=['Profiles'])
-def delete_profile_by_id(id, response: Response):
-        if not ObjectId.is_valid(id):
-            response.status_code = status.HTTP_400_BAD_REQUEST
-            raise HTTPException(status_code=400, detail="Invalid ObjectId")
-        delete_result = profile_db.delete_one(id)
-        if delete_result.deleted_count == 1:
-            return Response(status_code=204)
-        raise HTTPException(status_code=404, detail=f"Profile {id} not found")
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
+def delete_profile_by_id(id):
+    # Validate if id is of correct type ObjectId
+    util.is_valid_objectId(id)
 
-@router.patch('/profile/{id}', status_code=202, tags=['Profiles'])
+    delete_result = profile_db.delete_one(id)
+    if delete_result.deleted_count == 1:
+        return Response(status_code=204)
+    raise HTTPException(status_code=404, detail=f"Profile {id} not found")
+
+@router.patch('/{id}', status_code=202)
 def update_profile(id: str, profile: ProfileModel):
-    if not ObjectId.is_valid(id):
-        raise HTTPException(status_code=400, detail="Invalid ObjectId")
+    # Validate if id is of correct type ObjectId
+    util.is_valid_objectId(id)
 
     update_result = profile_db.update_profile(ObjectId(id), profile)
 
@@ -47,11 +51,11 @@ def update_profile(id: str, profile: ProfileModel):
     else:
         raise HTTPException(status_code=404, detail=f"Profile {id} not found")
 
-@router.get('/profile/{id}', status_code=200, response_model=ShowProfile, tags=['Profiles'])
+@router.get('/{id}', status_code=200, response_model=ShowProfile)
 def get_profile_by_id(id: str, response: Response):
-    if not ObjectId.is_valid(id):
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        raise HTTPException(status_code=400, detail="Invalid ObjectId")
+    # Validate if id is of correct type ObjectId
+    util.is_valid_objectId(id)
+
     profile = profile_db.find_by_id(pid=id)
 
     creator_id = profile.get("creator_id")

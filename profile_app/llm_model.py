@@ -1,11 +1,10 @@
-from pprint import pprint
-
 from langchain_ollama import OllamaLLM
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 
 import document_processing as dp
-from utils import llm_util as util
+from profile_app.utils import llm_util as util
+
 
 # llama = OllamaLLM(model='llama3.2', base_url="http://127.0.0.1:11434"
 

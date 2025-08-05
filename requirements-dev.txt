@@ -1,2 +1,5 @@
 passlib
 bcrypt==4.0.1
+pydantic
+fastapi
+pymongo
