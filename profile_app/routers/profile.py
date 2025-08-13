@@ -1,11 +1,12 @@
-from typing import List
+from typing import List, Annotated
 
 from bson import ObjectId
-from fastapi import APIRouter, HTTPException, status, Response
+from fastapi import APIRouter, HTTPException, status, Response, Depends
 
 from profile_app.dbManager import profile_db, user_db
-from profile_app.models import ShowProfile, ProfileModel
+from profile_app.models import ShowProfile, ProfileModel, User
 import profile_app.utils.app_util as util
+from ..oauth2 import get_current_user
 
 router = APIRouter(
     prefix='/profile',
@@ -14,12 +15,12 @@ router = APIRouter(
 
 
 @router.get("/", response_model=List[ShowProfile])
-def get_all_profiles():
-    profiles = profile_db.find_all_profiles()
-    return profiles
+def get_all_profiles(current_user: Annotated[User, Depends(get_current_user)]):
+    return profile_db.find_all_profiles()
+
 
 @router.post('/', response_model=ProfileModel, status_code=status.HTTP_201_CREATED)
-def create_profile(profile: ProfileModel):
+def create_profile(profile: ProfileModel, current_user: Annotated[User, Depends(get_current_user)]):
     if profile is None:
         raise HTTPException(status_code=402, detail='Bad Request: Invalid Profile Details')
     pid = profile_db.insert_profile(profile)
@@ -29,7 +30,7 @@ def create_profile(profile: ProfileModel):
         raise HTTPException(status_code=400)
 
 @router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
-def delete_profile_by_id(id):
+def delete_profile_by_id(id, current_user: Annotated[User, Depends(get_current_user)]):
     # Validate if id is of correct type ObjectId
     util.is_valid_objectId(id)
 
@@ -39,7 +40,7 @@ def delete_profile_by_id(id):
     raise HTTPException(status_code=404, detail=f"Profile {id} not found")
 
 @router.patch('/{id}', status_code=202)
-def update_profile(id: str, profile: ProfileModel):
+def update_profile(id: str, profile: ProfileModel, current_user: Annotated[User, Depends(get_current_user)]):
     # Validate if id is of correct type ObjectId
     util.is_valid_objectId(id)
 
@@ -52,7 +53,7 @@ def update_profile(id: str, profile: ProfileModel):
         raise HTTPException(status_code=404, detail=f"Profile {id} not found")
 
 @router.get('/{id}', status_code=200, response_model=ShowProfile)
-def get_profile_by_id(id: str, response: Response):
+def get_profile_by_id(id: str, response: Response, current_user: Annotated[User, Depends(get_current_user)]):
     # Validate if id is of correct type ObjectId
     util.is_valid_objectId(id)
 

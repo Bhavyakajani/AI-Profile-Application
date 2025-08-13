@@ -29,6 +29,9 @@ class DbManager:
     def get_db_client(self):
         return self.client
 
+    def get_db(self):
+        return self.collection
+
     def insert_profile(self, profile: ProfileModel) -> Any | None:
         try:
             # Inserting the candidate data into the 'candidates' collection and getting the inserted ID

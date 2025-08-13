@@ -57,7 +57,7 @@ class User(BaseModel):
     name: str
     email: str
     password: str
-    profiles: Optional[ProfilesCollection] = []
+    profiles: Optional[List[ProfileModel]] = []
 
 class Creator(BaseModel):
     name: str
@@ -90,6 +90,18 @@ class ShowUser(BaseModel):
 class UpdateUserResponse(BaseModel):
     message: str
     updated_data: dict
+
+class Login(BaseModel):
+    username: str
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    email: str | None = None
 
 
 
