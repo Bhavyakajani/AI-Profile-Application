@@ -47,12 +47,18 @@ class ProfileModel(BaseModel):
 
 
 class ProfileUpdateRequest(BaseModel):
-    name: Optional[str] | None = None
+    name: Optional[str] = None
     contact_number: Optional[str] = None
     email: Optional[str] = None
-    skills: Skills = Field(default_factory=list)
-    educations: List[Education] = Field(default_factory=list)
-    work_experiences: List[WorkExperience] = Field(default_factory=list)
+    skills:  Optional[Skills] = None
+    educations: Optional[List[Education]] = None
+    work_experiences: Optional[List[WorkExperience]] = None
     YoE: Optional[str] = None
 
+#---------------- Bookmark ------------------
+class BookmarkCreateRequest(BaseModel):
+    profile_id: str
+
+class BookmarkDeleteRequest(BaseModel):
+    profile_id: str
 

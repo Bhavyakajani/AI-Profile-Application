@@ -17,6 +17,11 @@ class LoginResponse(BaseModel):
     token_type: str
 
 #--------------User-----------------
+
+class UserStats(BaseResponseModel):
+    total_created_profiles: int = 0
+    total_bookmarked_profiles: int = 0
+
 class UserCreateResponse(BaseResponseModel):
     name: str
     email: EmailStr
@@ -26,6 +31,7 @@ class UserGetResponse(BaseResponseModel):
     name: str
     email: EmailStr | None
     role: str
+    stats: Optional[UserStats] = None
 
 class UserUpdateResponse(BaseResponseModel):
     message: str
@@ -51,6 +57,7 @@ class ProfileResponse(BaseResponseModel):
     updated_at: datetime
 
 class ProfilesListResponse(BaseResponseModel):
+    total_count: int
     profiles: List[ProfileResponse]
 
 class ProfileUpdateResponse(BaseResponseModel):
