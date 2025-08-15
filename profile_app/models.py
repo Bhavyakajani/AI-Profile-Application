@@ -1,8 +1,8 @@
 from datetime import date
 
 from bson import ObjectId
-from pydantic import BaseModel, Field, ConfigDict
-from typing import Union, List, Dict, Optional
+from pydantic import BaseModel, Field
+from typing import List, Optional
 
 from profile_app.object_id import PyObjectId
 
