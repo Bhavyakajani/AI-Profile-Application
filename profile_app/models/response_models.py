@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from pydantic import EmailStr, Field
 from bson import ObjectId
 from sub_models import *
@@ -71,4 +70,16 @@ class BookmarkCreateResponse(BaseModel):
 class BookmarkDeleteResponse(BaseModel):
     message: str
 
+#---------------File------------------
+class FileMetadata(BaseResponseModel):
+    file_id: str
+    original_name: str
+    stored_name: str
+    content_type: str
+    size: int
+    uploaded_at: datetime
 
+class FileUploadResponse(BaseResponseModel):
+    """Response model for file upload + parsing"""
+    message: str
+    metadata: FileMetadata
