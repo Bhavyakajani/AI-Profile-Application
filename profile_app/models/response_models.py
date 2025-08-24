@@ -1,7 +1,7 @@
 from datetime import datetime
 from pydantic import EmailStr, Field
 from bson import ObjectId
-from sub_models import *
+from .sub_models import *
 
 class BaseResponseModel(BaseModel):
     class Config:
@@ -51,9 +51,7 @@ class ProfileResponse(BaseResponseModel):
     educations: List[Education] = Field(default_factory=list)
     work_experiences: List[WorkExperience] = Field(default_factory=list)
     YoE: Optional[str] = None
-    creator: Optional[CreatorResponse]
-    created_at: datetime
-    updated_at: datetime
+    creator: str | None = None
 
 class ProfilesListResponse(BaseResponseModel):
     total_count: int

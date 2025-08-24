@@ -4,9 +4,9 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 
-from profile_app.models import Token
-from profile_app.dbManager import user_db
-from ..jwt_token import create_access_token
+from profile_app.models.request_models import Token
+from profile_app.database.dbManager import user_db
+from profile_app.authentication.jwt_token import create_access_token
 from ..utils import app_util as util
 
 router = APIRouter(
@@ -25,6 +25,6 @@ def login(request: Annotated[OAuth2PasswordRequestForm, Depends()]):
 
     # Generate JWT
     access_token = create_access_token(
-        data={"sub": user_dict["name"]}
+        data={"sub": user_dict["email"]}
     )
     return Token(access_token=access_token, token_type="bearer")

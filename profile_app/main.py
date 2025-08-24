@@ -1,5 +1,5 @@
 import llm_model as llm
-import dbManager as db
+from profile_app.database import dbManager as db
 import os
 
 

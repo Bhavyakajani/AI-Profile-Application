@@ -1,11 +1,19 @@
 from fastapi import UploadFile, File
 from pydantic import Field, EmailStr
-from sub_models import *
+from .sub_models import *
 
 class LoginRequest(BaseModel):
     """Auth Request Body"""
     username: EmailStr
     password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    email: str | None = None
 
 class UserCreateRequest(BaseModel):
     """Request Body for creating a new user"""
@@ -24,6 +32,10 @@ class ProfileCreateRequest(BaseModel):
     """file: UploadFile = File(...) multipart form"""
     file: UploadFile = File(...)
 
+class Creator(BaseModel):
+    name: str
+    email: str
+
 class ProfileModel(BaseModel):
     """A complete profile information extracted from the résumé."""
     #Personal Information
@@ -32,7 +44,7 @@ class ProfileModel(BaseModel):
     email: Optional[str] = None
 
     #Skills
-    skills: Skills = Field(default_factory=list)
+    skills: List[str] = Field(default_factory=list)
 
     #Education
     educations: List[Education] = Field(default_factory=list)
@@ -43,8 +55,14 @@ class ProfileModel(BaseModel):
     #Years of Experience
     YoE: Optional[str] =  None
     #Creator(Some User)
-    creator_id : str | None = None
+    creator : str | None = None
 
+
+class User(BaseModel):
+    name: str
+    email: str
+    password: str
+    profiles: Optional[List[ProfileModel]] = []
 
 class ProfileUpdateRequest(BaseModel):
     name: Optional[str] = None

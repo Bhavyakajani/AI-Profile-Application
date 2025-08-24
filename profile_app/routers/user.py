@@ -1,18 +1,18 @@
-from typing import List, Annotated
+from typing import Annotated
 
 from bson import ObjectId
 from fastapi import APIRouter, HTTPException, status, Response, Depends
-from profile_app.dbManager import user_db
-from profile_app.models import UpdateUserResponse, User, ShowUser
+from profile_app.database.dbManager import user_db
+from profile_app.schema import UpdateUserResponse, User, ShowUser
 import profile_app.utils.app_util as util
-from profile_app.oauth2 import get_current_user
+from profile_app.authentication.oauth2 import get_current_user
 
 router = APIRouter(
     prefix='/user',
     tags=['Users']
 )
 @router.post('/', response_model=ShowUser)
-def create_user(user: User, current_user: Annotated[User, Depends(get_current_user)]):
+def create_user(user: User):
     if user:
         user_dict = user.model_dump()
         user_dict = util.hash_password(user_dict)
@@ -33,13 +33,13 @@ def delete_user(id, current_user: Annotated[User, Depends(get_current_user)]):
     raise HTTPException(status_code=404, detail=f"Profile {id} not found")
 
 @router.get('/{id}', status_code=status.HTTP_200_OK, response_model=ShowUser)
-def get_user(id, current_user: Annotated[User, Depends(get_current_user)]):
+def get_user(id):
     # Validate if id is of correct type ObjectId
     util.is_valid_objectId(id)
     user = user_db.find_by_id(id)
     if user is None:
         raise HTTPException(status_code=404, detail=f"User {id} not found")
-    return ShowUser(name=user["name"], email=user["email"])
+    return ShowUser(name=user["name"], email=user["user_name"])
 
 @router.patch('/{id}', response_model=UpdateUserResponse)
 def update_user(id, user: User, current_user: Annotated[User, Depends(get_current_user)]):

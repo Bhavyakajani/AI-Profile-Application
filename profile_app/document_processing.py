@@ -1,11 +1,31 @@
+from pathlib import Path
+
+from fastapi import UploadFile
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from pptx import Presentation
 import cv2
 import pytesseract
+import uuid
+import shutil
 # document_processing.py
+UPLOAD_DIR = Path("uploaded_resume")
+UPLOAD_DIR.mkdir(exist_ok=True)
+
+
+def save_upload_file_tmp(file: UploadFile):
+    """Save UploadFile to disk temporarily and return path."""
+    file_id = str(uuid.uuid4())
+    ext = Path(file.filename).suffix
+    stored_name = f"{file_id}{ext}"
+    file_path = UPLOAD_DIR / stored_name
+    with file_path.open("wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    return file_path, stored_name, file_id
+
 
 def load_file(path):
+    path = str(path).lower()
     """Load the files and extract the text"""
     text_runs = []
     if path.endswith(".pdf"):
@@ -26,6 +46,7 @@ def load_file(path):
         return text_runs
     elif path.endswith('.jpg') or path.endswith('.jpeg') or path.endswith('.png'):
             image = cv2.imread(path)
+            text = ""
             if image is not None:
                 text = pytesseract.image_to_string(image)
                 # print(text)

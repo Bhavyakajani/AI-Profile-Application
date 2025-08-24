@@ -1,13 +1,15 @@
 from typing import List, Annotated
 
 from bson import ObjectId
-from fastapi import APIRouter, HTTPException, status, Response, Depends
+from fastapi import APIRouter, HTTPException, status, Response, Depends, UploadFile
 
-from profile_app.dbManager import profile_db, user_db
-from profile_app.models import ShowProfile, ProfileModel, User
+from profile_app.database.dbManager import profile_db, user_db
+from profile_app.models.request_models import TokenData
+from profile_app.models.response_models import ProfileResponse
+from profile_app.schema import ShowProfile, ProfileModel, User
 import profile_app.utils.app_util as util
-from ..oauth2 import get_current_user
-
+from profile_app.authentication.oauth2 import get_current_user
+import profile_app.document_processing as dp
 router = APIRouter(
     prefix='/profile',
     tags=['Profiles']
@@ -16,6 +18,7 @@ router = APIRouter(
 
 @router.get("/", response_model=List[ShowProfile])
 def get_all_profiles(current_user: Annotated[User, Depends(get_current_user)]):
+
     return profile_db.find_all_profiles()
 
 
@@ -66,8 +69,23 @@ def get_profile_by_id(id: str, response: Response, current_user: Annotated[User,
     if profile is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         raise HTTPException(status_code=404, detail=f"Profile with id: {id} not found")
-    if creator is None:
-        response.status_code = status.HTTP_404_NOT_FOUND
-        raise HTTPException(status_code=404, detail=f"Creator with id: {creator_id} not found")
-
+    # if creator is None:
+    #     #     response.status_code = status.HTTP_404_NOT_FOUND
+    #     #     raise HTTPException(status_code=404, detail=f"Creator with id: {creator_id} not found")
+    print(current_user)
     return ShowProfile(creator=creator)
+
+
+@router.post("/parse", response_model=ProfileResponse)
+async def parse_profile(file: UploadFile, current_user: Annotated[TokenData, Depends(get_current_user)]):
+    print(current_user)
+    file_extension = file.filename.split(".")[-1].lower()
+    if file_extension not in ["pdf", "pptx", "jpg", "jpeg", "png"]:
+        raise HTTPException(status_code=400, detail="File format not supported")
+
+    file_path, stored_name, file_id = dp.save_upload_file_tmp(file)
+    profile_model = util.parse_resume(file_path, current_user)
+    if not profile_model :
+        return HTTPException(status_code=400, detail="Profile exists or an error might have occurred")
+    print(current_user)
+    return profile_model

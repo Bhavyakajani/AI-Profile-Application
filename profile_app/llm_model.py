@@ -2,7 +2,7 @@ from langchain_ollama import OllamaLLM
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 
-import document_processing as dp
+import profile_app.document_processing as dp
 from profile_app.utils import llm_util as util
 
 
@@ -30,7 +30,7 @@ def get_prompt():
     - Give the output without any escape characters and only in JSON format.
     """
 
-def extract_with_llm(file_path):
+def extract_with_llm(file_path) -> dict:
     """
     Extract information from a text using a language model.
     Input_variables = Provide input variables to be replaced on the prompt

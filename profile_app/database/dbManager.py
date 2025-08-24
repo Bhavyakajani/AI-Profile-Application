@@ -5,7 +5,7 @@ from bson import ObjectId
 
 from pymongo import MongoClient, ReturnDocument
 
-from profile_app.models import ProfileModel
+from profile_app.models.request_models import ProfileModel
 
 
 class DbManager:
