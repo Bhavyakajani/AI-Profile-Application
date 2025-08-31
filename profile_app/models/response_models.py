@@ -54,7 +54,7 @@ class ProfileResponse(BaseResponseModel):
     creator: str | None = None
 
 class ProfilesListResponse(BaseResponseModel):
-    total_count: int
+    total_count: int | None
     profiles: List[ProfileResponse]
 
 class ProfileUpdateResponse(BaseResponseModel):

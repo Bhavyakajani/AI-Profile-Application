@@ -57,6 +57,9 @@ class DbManager:
     def find_all_profiles(self):
         return self.collection.find().to_list(10)
 
+    def count_all_documents_in_collection(self):
+        return self.collection.estimated_document_count()
+
     def update_profile(self, pid, profile: ProfileModel) -> dict :
         return self.collection.find_one_and_update({"_id": pid}, {"$set": profile.model_dump()}, return_document=ReturnDocument.AFTER)
 

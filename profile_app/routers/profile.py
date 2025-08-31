@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, status, Response, Depends, UploadF
 
 from profile_app.database.dbManager import profile_db, user_db
 from profile_app.models.request_models import TokenData
-from profile_app.models.response_models import ProfileResponse
+from profile_app.models.response_models import ProfileResponse, ProfilesListResponse
 from profile_app.schema import ShowProfile, ProfileModel, User
 import profile_app.utils.app_util as util
 from profile_app.authentication.oauth2 import get_current_user
@@ -16,10 +16,11 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=List[ShowProfile])
-def get_all_profiles(current_user: Annotated[User, Depends(get_current_user)]):
+@router.get("/", response_model=ProfilesListResponse)
+def get_all_profiles():
 
-    return profile_db.find_all_profiles()
+    return ProfilesListResponse(total_count=profile_db.count_all_documents_in_collection(), profiles=profile_db.find_all_profiles())
+
 
 
 @router.post('/', response_model=ProfileModel, status_code=status.HTTP_201_CREATED)
