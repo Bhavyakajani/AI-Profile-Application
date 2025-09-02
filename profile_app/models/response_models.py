@@ -1,6 +1,8 @@
 from datetime import datetime
 from pydantic import EmailStr, Field
 from bson import ObjectId
+
+from .request_models import ProfileModel
 from .sub_models import *
 
 class BaseResponseModel(BaseModel):
@@ -22,9 +24,11 @@ class UserStats(BaseResponseModel):
     total_bookmarked_profiles: int = 0
 
 class UserCreateResponse(BaseResponseModel):
+    id: str
     name: str
     email: EmailStr
     role: str
+    profiles: Optional[List[ProfileModel]] = []
 
 class UserGetResponse(BaseResponseModel):
     name: str

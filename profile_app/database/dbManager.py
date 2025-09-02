@@ -47,6 +47,8 @@ class DbManager:
         if isinstance(pid, str):
             pid = ObjectId(pid)
         return self.collection.find_one({"_id": pid})
+    def find_by_key(self, profile_json) -> dict:
+        return self.collection.find_one({"creator": profile_json["creator"]})
 
     def profile_exists(self, profile_json) -> bool:
         return self.collection.find_one(profile_json) is not None

@@ -60,8 +60,9 @@ class ProfileModel(BaseModel):
 
 class User(BaseModel):
     name: str
-    email: str
+    email: EmailStr
     password: str
+    role: str
     profiles: Optional[List[ProfileModel]] = []
 
 class ProfileUpdateRequest(BaseModel):

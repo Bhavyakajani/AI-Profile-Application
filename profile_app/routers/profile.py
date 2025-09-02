@@ -56,25 +56,18 @@ def update_profile(id: str, profile: ProfileModel, current_user: Annotated[User,
     else:
         raise HTTPException(status_code=404, detail=f"Profile {id} not found")
 
-@router.get('/{id}', status_code=200, response_model=ShowProfile)
+@router.get('/{id}', status_code=200, response_model=ProfileResponse)
 def get_profile_by_id(id: str, response: Response, current_user: Annotated[User, Depends(get_current_user)]):
     # Validate if id is of correct type ObjectId
     util.is_valid_objectId(id)
 
     profile = profile_db.find_by_id(pid=id)
-
-    creator_id = profile.get("creator_id")
-    creator = user_db.find_by_id(pid=creator_id)
-
     # Validation
     if profile is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         raise HTTPException(status_code=404, detail=f"Profile with id: {id} not found")
-    # if creator is None:
-    #     #     response.status_code = status.HTTP_404_NOT_FOUND
-    #     #     raise HTTPException(status_code=404, detail=f"Creator with id: {creator_id} not found")
     print(current_user)
-    return ShowProfile(creator=creator)
+    return ProfileResponse(**profile)
 
 
 @router.post("/parse", response_model=ProfileResponse)
