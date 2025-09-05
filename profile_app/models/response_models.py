@@ -31,10 +31,10 @@ class UserCreateResponse(BaseResponseModel):
     profiles: Optional[List[ProfileModel]] = []
 
 class UserGetResponse(BaseResponseModel):
+    id: str
     name: str
     email: EmailStr | None
     role: str
-    stats: Optional[UserStats] = None
 
 class UserUpdateResponse(BaseResponseModel):
     message: str
