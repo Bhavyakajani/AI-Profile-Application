@@ -51,4 +51,3 @@ def parse_resume(file_path: str, current_user) -> ProfileModel | None:
         profile_model.creator = current_user.email
         pid = database.insert_profile(profile_model)
     return profile_model
-

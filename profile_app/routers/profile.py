@@ -3,10 +3,10 @@ from typing import List, Annotated
 from bson import ObjectId
 from fastapi import APIRouter, HTTPException, status, Response, Depends, UploadFile
 
-from profile_app.database.dbManager import profile_db, user_db
-from profile_app.models.request_models import TokenData
+from profile_app.database.dbManager import profile_db
+from profile_app.models.request_models import TokenData, ProfileModel
 from profile_app.models.response_models import ProfileResponse, ProfilesListResponse
-from profile_app.schema import ShowProfile, ProfileModel, User
+from profile_app.schema import User
 import profile_app.utils.app_util as util
 from profile_app.authentication.oauth2 import get_current_user
 import profile_app.document_processing as dp
@@ -23,13 +23,18 @@ def get_all_profiles():
 
 
 
-@router.post('/', response_model=ProfileModel, status_code=status.HTTP_201_CREATED)
+@router.post('/', response_model=ProfileResponse, status_code=status.HTTP_201_CREATED)
 def create_profile(profile: ProfileModel, current_user: Annotated[User, Depends(get_current_user)]):
+    print(profile)
     if profile is None:
         raise HTTPException(status_code=402, detail='Bad Request: Invalid Profile Details')
+    profile.creator = current_user.email
     pid = profile_db.insert_profile(profile)
+    print(f"Profile Manually created with id: {pid}")
     if pid:
-        return {"profile_id": pid}
+        new_profile = profile_db.find_by_id(pid)
+        new_profile["_id"] = str(new_profile["_id"])
+        return ProfileResponse(**new_profile)
     else:
         raise HTTPException(status_code=400)
 
