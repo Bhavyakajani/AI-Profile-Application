@@ -18,8 +18,9 @@ router = APIRouter(
 
 @router.get("/", response_model=ProfilesListResponse)
 def get_all_profiles():
-
-    return ProfilesListResponse(total_count=profile_db.count_all_documents_in_collection(), profiles=profile_db.find_all_profiles())
+    profiles = profile_db.find_all_profiles()
+    total_count = profile_db.count_all_documents_in_collection()
+    return ProfilesListResponse(total_count=total_count, profiles=profiles)
 
 
 
@@ -28,6 +29,9 @@ def create_profile(profile: ProfileModel, current_user: Annotated[User, Depends(
     print(profile)
     if profile is None:
         raise HTTPException(status_code=402, detail='Bad Request: Invalid Profile Details')
+    if profile_db.profile_exists_by_name(profile.model_dump()):
+        print(f"{profile} already exists")
+        return None
     profile.creator = current_user.email
     pid = profile_db.insert_profile(profile)
     print(f"Profile Manually created with id: {pid}")
@@ -71,13 +75,12 @@ def get_profile_by_id(id: str, response: Response, current_user: Annotated[User,
     if profile is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         raise HTTPException(status_code=404, detail=f"Profile with id: {id} not found")
-    print(current_user)
+    profile["_id"] = str(profile["_id"])
     return ProfileResponse(**profile)
 
 
 @router.post("/parse", response_model=ProfileResponse)
 async def parse_profile(file: UploadFile, current_user: Annotated[TokenData, Depends(get_current_user)]):
-    print(current_user)
     file_extension = file.filename.split(".")[-1].lower()
     if file_extension not in ["pdf", "pptx", "jpg", "jpeg", "png"]:
         raise HTTPException(status_code=400, detail="File format not supported")
@@ -86,5 +89,4 @@ async def parse_profile(file: UploadFile, current_user: Annotated[TokenData, Dep
     profile_model = util.parse_resume(file_path, current_user)
     if not profile_model :
         return HTTPException(status_code=400, detail="Profile exists or an error might have occurred")
-    print(current_user)
     return profile_model

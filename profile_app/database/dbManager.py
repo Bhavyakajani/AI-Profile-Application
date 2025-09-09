@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Mapping
 from bson import ObjectId
 
 from pymongo import MongoClient, ReturnDocument
@@ -47,6 +47,7 @@ class DbManager:
         if isinstance(pid, str):
             pid = ObjectId(pid)
         return self.collection.find_one({"_id": pid})
+
     def find_by_key(self, profile_json) -> dict:
         return self.collection.find_one({"creator": profile_json["creator"]})
 
@@ -57,7 +58,8 @@ class DbManager:
         return self.collection.find_one({"name": profile_json["name"]}) is not None
 
     def find_all_profiles(self):
-        return self.collection.find().to_list(10)
+        docs = self.collection.find().to_list(10)
+        return [self.convert_objectid(doc) for doc in docs]
 
     def count_all_documents_in_collection(self):
         return self.collection.estimated_document_count()
@@ -84,6 +86,11 @@ class DbManager:
         return self.collection.find_one_and_update(
             {"_id": oid_user}, {"$set": user}, return_document=ReturnDocument.AFTER
         )
+
+    def convert_objectid(self, doc: dict) -> dict | Mapping[str, Any]:
+        if "_id" in doc and isinstance(doc["_id"], ObjectId):
+            doc["_id"] = str(doc["_id"])
+        return doc
 
 profile_db = DbManager("candidates")
 user_db = DbManager("users")

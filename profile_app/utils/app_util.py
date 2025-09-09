@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Mapping
 
 from bson import ObjectId
 from fastapi import HTTPException
@@ -8,6 +8,7 @@ import profile_app.database.dbManager as db
 from passlib.context import CryptContext
 
 from profile_app.models.request_models import ProfileModel, User, TokenData
+from profile_app.models.response_models import ProfileResponse
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated = "auto")
 database = db.DbManager("candidates")
@@ -40,14 +41,17 @@ def verify_password(hashed_pwd, pwd) -> bool:
     """
     return pwd_context.verify(pwd, hashed_pwd)
 
-def parse_resume(file_path: str, current_user) -> ProfileModel | None:
+def parse_resume(file_path: str, current_user) -> ProfileResponse | None:
     profile_json = llm.extract_with_llm(file_path)
+
     if database.profile_exists_by_name(profile_json):
         print(f"{profile_json['name']} already exists")
         return None
-    else:
-        profile_model = ProfileModel(**profile_json)
-        print(current_user)
-        profile_model.creator = current_user.email
-        pid = database.insert_profile(profile_model)
-    return profile_model
+
+    profile_model = ProfileModel(**profile_json)
+    profile_model.creator = current_user.email
+    pid = database.insert_profile(profile_model)
+    data = profile_model.model_dump()
+    profile_response = ProfileResponse(**data)
+    profile_response.id = str(pid)
+    return profile_response
