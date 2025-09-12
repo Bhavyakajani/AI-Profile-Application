@@ -53,6 +53,8 @@ def load_file(path):
             return text
     else:
         print("Incorrect file FORMAT, only supported file formats are pdf, jpg, jpeg, pptx, png.")
+        return None
+
 
 # text = load_file("data/Bhavya Kajani-1.pdf")
 # print("FIle PRINTED ABOVE")
