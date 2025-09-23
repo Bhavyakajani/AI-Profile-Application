@@ -1,7 +1,7 @@
 from typing import Type, Dict, Any
 from abc import ABC, abstractmethod
 from pydantic import BaseModel
-from profile_app.llm_model import extract_with_llm  # Assuming llm_model is defined in a module named llm_model
+from profile_app.ai.llm_model import extract_with_llm  # Assuming llm_model is defined in a module named llm_model
 
 
 class BaseExtractor(ABC):

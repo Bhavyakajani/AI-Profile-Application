@@ -1,4 +1,4 @@
-import llm_model as llm
+from profile_app.ai import llm_model as llm
 from profile_app.database import dbManager as db
 import os
 

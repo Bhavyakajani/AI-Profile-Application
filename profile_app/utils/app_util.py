@@ -1,13 +1,13 @@
-from typing import Any, Mapping
+from typing import Any
 
 from bson import ObjectId
 from fastapi import HTTPException
-import profile_app.llm_model as llm
+import profile_app.ai.llm_model as llm
 import profile_app.database.dbManager as db
 
 from passlib.context import CryptContext
 
-from profile_app.models.request_models import ProfileModel, User, TokenData
+from profile_app.models.request_models import ProfileModel
 from profile_app.models.response_models import ProfileResponse
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated = "auto")
