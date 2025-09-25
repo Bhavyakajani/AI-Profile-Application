@@ -1,0 +1,7 @@
+/myenv/
+*.iml
+*.xml
+*.zip
+*.drawio
+*.png
+*.pyc
