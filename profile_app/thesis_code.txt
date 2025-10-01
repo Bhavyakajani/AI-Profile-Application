@@ -1,0 +1,247 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Bachelor's & Master's Thesis Template             %%
+%% Copyleft by Artur M. Brodzki & Piotr Woźniak      %%
+%% Faculty of Electronics and Information Technology %%
+%% Warsaw University of Technology, 2019-2020        %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[
+    left=2.5cm,         % Sadly, generic margin parameter
+    right=2.5cm,        % doesnt't work, as it is
+    top=2.5cm,          % superseded by more specific
+    bottom=3cm,         % left...bottom parameters.
+    bindingoffset=6mm,  % Optional binding offset.
+    nohyphenation=false % You may turn off hyphenation, if don't like.
+]{eiti/eiti-thesis}
+
+\langeng % Dla języka angielskiego mamy \langeng
+\graphicspath{{img/}}             % Katalog z obrazkami.
+\addbibresource{bibliografia.bib} % Plik .bib z bibliografią
+
+\begin{document}
+
+%--------------------------------------
+% Strona tytułowa
+%--------------------------------------
+\EngineerThesis % Dla pracy inżynierskiej mamy \EngineerThesis
+\instytut{Computer Science}
+\kierunek{Computer Science}
+\specjalnosc{Computer Systems and Networks}
+\title{
+    AI Powered Profile Application
+}
+\engtitle{ % Tytuł po angielsku do angielskiego streszczenia
+    AI Powered Profile Application
+}
+\author{Bhavya Kajani}
+\album{323802}
+\promotor{mgr inż. Waldemar Grabski}
+\date{\the\year}
+\maketitle
+
+%--------------------------------------
+% Streszczenie po polsku
+%--------------------------------------
+\cleardoublepage % Zaczynamy od nieparzystej strony
+\streszczenie
+PLACEHOLDER
+\slowakluczowe XXX, XXX, XXX
+
+%--------------------------------------
+% Streszczenie po angielsku
+%--------------------------------------
+\newpage
+\abstract
+ PLACEHOLDER
+\keywords XXX, XXX, XXX
+
+%--------------------------------------
+% Oświadczenie o autorstwie
+%--------------------------------------
+\cleardoublepage  % Zaczynamy od nieparzystej strony
+\pagestyle{plain}
+\makeauthorship
+
+%--------------------------------------
+% Spis treści
+%--------------------------------------
+\cleardoublepage % Zaczynamy od nieparzystej strony
+\tableofcontents
+\newpage
+\section{Introduction}
+\subsection{Problem Statement}
+Resource allocation in consulting firms requires extensive manual review of candidate profiles, a time-consuming process prone to human error and inconsistency. Traditional methods relying on template matching or rule-based extraction fail to handle the variability in resume formats and lack semantic understanding of contextual information.
+
+\subsection{Project Objectives}
+The AI Powered Profile Application aims to:
+\begin{itemize}
+    \item Automate extraction of structured candidate data (skills, experience, education) from unstructured resumes
+    \item Implement semantic understanding of resume content using local LLM (Ollama)
+    \item Develop a hybrid storage system combining vector embeddings (Chroma DB) and structured data (MongoDB)
+    \item Create a scalable backend pipeline for processing diverse document formats (PDF, PPTX, images)
+\end{itemize}
+\subsection{Structure of the Report}
+This document is structured as follows:
+\begin{enumerate}
+    \item \textbf{Chapter 2}: Technology Stack
+
+    This chapter will describe the core components being used in creating the application along with the supporting libraries
+    \item \textbf{Chapter 3}: Analysis
+
+    In this chapter, we will discuss the previous approaches and how the current approach was chosen.  
+    \item \textbf{Chapter 4}: Current Implementation
+
+    Then we will discuss the current iteration and the key code implementations and also the challenges that came with it.
+    \item \textbf{Chapter 5}: Testing
+
+    After the base application is developed it can be tested by both manual and automation tests.     
+    \item \textbf{Chapter 6}: Future Work
+    
+    This section will include the planned work for future.
+    \item \textbf{Chapter 7}: Conclusion
+
+    Finally, the conclusion based on the above chapters
+\end{enumerate}
+
+\newpage
+\section{Technology Stack}
+\subsection{Core Components}
+\begin{itemize}
+    \item \textbf{Ollama/Llama3}: Locally-run LLM for semantic processing and information extraction
+    \item \textbf{Chroma DB}: Vector database for storing and retrieving document embeddings
+    \item \textbf{MongoDB}: NoSQL database for structured profile storage
+    \item \textbf{Python Backend}: LangChain framework for document processing pipeline
+\end{itemize}
+
+\subsection{Supporting Libraries}
+\begin{itemize}
+    \item \textbf{PyPDFLoader}: PDF text extraction
+    \item \textbf{pytesseract}: OCR for image-based resumes
+    \item \textbf{python-pptx}: PowerPoint document processing
+    \item \textbf{OpenCV}: Image preprocessing for OCR
+\end{itemize}
+
+\newpage
+\section{Analysis}
+\subsection{Approach Comparison}
+The system evaluates three primary approaches for resume parsing:
+
+\subsubsection{Rule-Based Extraction (Regex)}
+\begin{itemize}
+    \item Pros: Simple implementation for fixed patterns
+    \item Cons: Fails with varied phrasing and document structures
+\end{itemize}
+
+\subsubsection{Named Entity Recognition (NER)}
+\begin{itemize}
+    \item Pros: Better semantic understanding than regex
+    \item Cons: Requires extensive labeled training data
+\end{itemize}
+
+\subsubsection{Large Language Model (LLM)}
+\begin{itemize}
+    \item Pros: Handles format variability and implicit information
+    \item Cons: Potential hallucinations and computational cost
+\end{itemize}
+
+\subsection{Selected Architecture}
+The implemented solution uses LLM as the primary extraction method with the following workflow:
+\begin{enumerate}
+    \item Document preprocessing (format-specific text extraction)
+    \item Text chunking (1500 tokens with 200 overlap)
+    \item Vector embedding generation (Ollama embeddings)
+    \item Semantic search via Chroma DB
+    \item LLM-powered structured extraction with JSON output
+    \item MongoDB storage for final profiles
+\end{enumerate}
+
+\newpage
+\section{Current Implementation}
+\subsection{Completed Components}
+\begin{itemize}
+    \item Document processing pipeline for PDF, PPTX, and image formats
+    \item Text chunking and embedding generation system
+    \item Chroma DB vector store implementation
+    \item LLM querying with structured JSON output
+    \item MongoDB integration for profile storage
+\end{itemize}
+
+\subsection{Key Code Implementation}
+The implementation handles document processing through a modular pipeline:
+
+\begin{verbatim}
+def load_file(path):
+    if path.endswith(".pdf"):
+        loader = PyPDFLoader(path)
+        return loader.load()
+    elif path.endswith(".pptx"):
+        # PPTX processing logic
+    elif image_format(path):
+        # OCR processing logic
+\end{verbatim}
+
+Chunking and embedding generation:
+
+\begin{verbatim}
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1500, chunk_overlap=200)
+chunks = text_splitter.split_documents(text)
+embeddings = OllamaEmbeddings(model="llama3.2")
+\end{verbatim}
+
+\subsection{Challenges and Solutions}
+\begin{itemize}
+    \item \textbf{Context Window Limitations}: Addressed through intelligent chunking with overlap
+    \item \textbf{Document Format Variability}: Handled by format-specific extraction modules
+    \item \textbf{Data Privacy}: Ensured through local LLM execution (Ollama).
+\end{itemize}
+
+\newpage
+\section{Testing}
+\subsection{Manual Tests}
+\subsection{Automated Tests}
+\section{Future Work}
+\begin{itemize}
+    \item Front-end development (React-based interface)
+    \item User validation and testing with real-world resumes
+    \item Performance optimization for large document sets
+    \item Enhanced error handling for OCR failures
+    \item Testing the Application
+\end{itemize}
+
+\section{Conclusion}
+The current implementation demonstrates the feasibility of using local LLMs for automated resume parsing while addressing privacy concerns. The hybrid database approach combines the strengths of vector search for semantic understanding with structured storage for exact filtering. Future work will focus on completing the full-stack implementation and optimizing the pipeline for production use.
+
+%--------------------------------------------
+% Literatura
+%--------------------------------------------
+\cleardoublepage % Zaczynamy od nieparzystej strony
+\printbibliography
+
+%--------------------------------------------
+% Spisy (opcjonalne)
+%--------------------------------------------
+\newpage
+\pagestyle{plain}
+
+\vspace{0.8cm}
+\acronymlist
+\acronym{EiTI}{Wydział Elektroniki i Technik Informacyjnych}
+\acronym{PW}{Politechnika Warszawska}
+
+
+\listoffigurestoc     % Spis rysunków.
+\vspace{1cm}          % vertical space
+\listoftablestoc      % Spis tabel.
+\vspace{1cm}          % vertical space
+\listofappendicestoc  % Spis załączników
+
+% Załączniki
+\newpage
+\appendix{Nazwa załącznika 1}
+
+
+\newpage
+\appendix{Nazwa załącznika 2}
+
+\end{document} % Dobranoc.
