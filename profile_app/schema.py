@@ -1,11 +1,8 @@
 from datetime import date
 
 from bson import ObjectId
-from pydantic import BaseModel, Field, ConfigDict
-from typing import Union, List, Dict, Optional
-
-from profile_app.object_id import PyObjectId
-
+from pydantic import BaseModel, Field
+from typing import List, Optional
 
 class Education(BaseModel):
     degree: Optional[str] = None
@@ -27,7 +24,7 @@ class Skills(BaseModel):
     skills: List[str]
 
 class ProfileModel(BaseModel):
-    """A complete profile information extracted from the resume."""
+    """A complete profile information extracted from the résumé."""
     #Personal Information
     name: Optional[str] = None
     contact_number: Optional[str] = None
@@ -44,17 +41,29 @@ class ProfileModel(BaseModel):
 
     #Years of Experience
     YoE: Optional[str] =  None
+    #Creator(Some User)
+    creator_id : Optional[str] = None
+
 
 
 class ProfilesCollection(BaseModel):
     """List of all the Profiles"""
     profiles: List[ProfileModel]
 
+class User(BaseModel):
+    name: str
+    email: str
+    password: str
+    profiles: Optional[List[ProfileModel]] = []
 
+class Creator(BaseModel):
+    name: str
+    email: str
 
 class ShowProfile(ProfileModel):
-    id: PyObjectId = Field(alias="_id")  # This maps Mongo’s `_id` to `id` in response
-
+    """Response Model for Profiles"""
+    # id: PyObjectId = Field(alias="_id")  # This maps Mongo’s `_id` to `id` in response
+    creator: Optional[Creator]
     class Config:
         from_attributes = True
         populate_by_name = True
@@ -62,6 +71,40 @@ class ShowProfile(ProfileModel):
         json_encoders = {
             ObjectId: str,
         }
+
+class ShowUser(BaseModel):
+    """Response Model for User"""
+    name: str
+    email: str
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {
+            ObjectId: str,
+        }
+
+class UpdateUserResponse(BaseModel):
+    message: str
+    updated_data: dict
+
+class Login(BaseModel):
+    username: str
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    email: str | None = None
+
+
+
+
+
+
 
 
 

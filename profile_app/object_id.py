@@ -1,8 +1,6 @@
 from typing import Any
 
 from bson import ObjectId
-from pydantic import BaseModel
-from pydantic import Field
 from pydantic_core import core_schema
 
 

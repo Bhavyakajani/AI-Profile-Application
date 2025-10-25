@@ -1,11 +1,9 @@
-from pprint import pprint
-
 from extractors.profile_extractor import ProfileExtractor
 from extractors.skills_extractor import SkillsExtractor
 from extractors.education_extractor import EducationExtractor
 from extractors.experience_extractor import ExperienceExtractor
 from extractors.yoe_extractor import YoEExtractor
-from llm_model import get_context
+
 
 class ResumeProcessor:
     """Class for processing resumes and extracting information."""
