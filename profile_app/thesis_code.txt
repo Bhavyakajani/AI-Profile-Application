@@ -6,14 +6,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \documentclass[
-    left=2.5cm,         % Sadly, generic margin parameter
-    right=2.5cm,        % doesnt't work, as it is
-    top=2.5cm,          % superseded by more specific
-    bottom=3cm,         % left...bottom parameters.
-    bindingoffset=6mm,  % Optional binding offset.
-    nohyphenation=false % You may turn off hyphenation, if don't like.
+    left=2.5cm,
+    right=2.5cm,
+    top=2.5cm,
+    bottom=3cm,
+    bindingoffset=6mm,
+    nohyphenation=false,
+    style=ieee,
+    sorting=none
 ]{eiti/eiti-thesis}
-
+\usepackage{subfig}
 \langeng % Dla języka angielskiego mamy \langeng
 \graphicspath{{img/}}             % Katalog z obrazkami.
 \addbibresource{bibliografia.bib} % Plik .bib z bibliografią
@@ -68,180 +70,273 @@ PLACEHOLDER
 \cleardoublepage % Zaczynamy od nieparzystej strony
 \tableofcontents
 \newpage
+
 \section{Introduction}
-\subsection{Problem Statement}
-Resource allocation in consulting firms requires extensive manual review of candidate profiles, a time-consuming process prone to human error and inconsistency. Traditional methods relying on template matching or rule-based extraction fail to handle the variability in resume formats and lack semantic understanding of contextual information.
+\subsection{Background}
+The digital transformation of recruitment processes has created a growing need for automated resume parsing and profile management systems. Traditional manual resume screening is time-consuming, prone to human error, and inefficient for handling large volumes of applications. The proliferation of digital resumes in various formats (PDF, DOCX, images) further complicates the extraction and standardization of candidate information.
 
-\subsection{Project Objectives}
-The AI Powered Profile Application aims to:
-\begin{itemize}
-    \item Automate extraction of structured candidate data (skills, experience, education) from unstructured resumes
-    \item Implement semantic understanding of resume content using local LLM (Ollama)
-    \item Develop a hybrid storage system combining vector embeddings (Chroma DB) and structured data (MongoDB)
-    \item Create a scalable backend pipeline for processing diverse document formats (PDF, PPTX, images)
-\end{itemize}
+This project addresses these challenges by developing an intelligent profile management system that leverages artificial intelligence and document processing technologies to automatically extract, structure, and manage candidate information from diverse resume formats. The system represents a significant step forward in automating the initial stages of candidate evaluation and profile organization.
+\subsection{Problem Description}
+The recruitment industry faces several critical challenges in candidate profile management:
+
+Information Extraction Complexity: Resumes come in multiple formats (PDF, PPTX, JPG, PNG, JPEG) with varying structures, making consistent data extraction difficult. Manual data entry is labor-intensive and susceptible to errors, leading to inconsistent candidate databases.
+
+\textbf{Data Standardization Issues:} Different candidates present similar information in diverse formats (e.g., date formats, skill categorization, experience descriptions), creating challenges for comparative analysis and searching.
+
+\textbf{Access Control and Security:} Managing user permissions and ensuring data security while allowing appropriate access levels for different user roles (admin vs. regular users) requires robust authentication and authorization mechanisms.
+
+\textbf{Scalability and Performance:} As the number of candidates grows, systems must efficiently handle increased load while maintaining response times for profile searches, updates, and document processing.
+
+\subsection{Problem Solution}
+To do at last
+ 
 \subsection{Structure of the Report}
-This document is structured as follows:
-\begin{enumerate}
-    \item \textbf{Chapter 2}: Technology Stack
+To do at last
 
-    This chapter will describe the core components being used in creating the application along with the supporting libraries
-    \item \textbf{Chapter 3}: Analysis
+\section{Similar Solutions and Differentiation}
+    \subsection{Example 1}
+    \subsection{Conclusion: Why choose current}
+To do at last
 
-    In this chapter, we will discuss the previous approaches and how the current approach was chosen.  
-    \item \textbf{Chapter 4}: Current Implementation
 
-    Then we will discuss the current iteration and the key code implementations and also the challenges that came with it.
-    \item \textbf{Chapter 5}: Testing
+\section{Analysis \& Specifications}
+\subsection{Analysis}
 
-    After the base application is developed it can be tested by both manual and automation tests.     
-    \item \textbf{Chapter 6}: Future Work
+The \textbf{AI-Powered Profile Application} aims to simplify candidate evaluation and profile management for consulting businesses. It supports three primary roles: Candidates, Managers (Administrators) and Clients. Candidates can create and update profiles to maintain accurate information. Managers oversee profile creation, editing, deletion, and permission control. Clients can browse, search, and filter profiles based on criteria such as skills or experience to efficiently identify suitable candidates.
+
+\subsection{Functional Requirements}
+The following functional requirements describe what the Profile Management System must be able to do to provide efficient resume parsing and candidate profile management:
+
+\begin{itemize}
+\item \textbf{F1. User Authentication:}
+    \begin{itemize}
+    \item F1.1: \textbf{Users} can log in using email id and password.
+    \item F1.2: \textbf{Users} can log out.
+    \end{itemize}
     
-    This section will include the planned work for future.
-    \item \textbf{Chapter 7}: Conclusion
+    
+\item \textbf{F2. Profile Management:}
+    \begin{itemize}    
+    \item F2.1: Candidates can create a single profile manually or using AI.
+    \item F2.2: Candidates can view and edit only their own profile.
+    \item F2.3: Clients can view profiles.
+    \end{itemize}
 
-    Finally, the conclusion based on the above chapters
-\end{enumerate}
+    
+\item \textbf{F3. Search and Filter Functionality:}
+    \begin{itemize}
+    \item F3.1: Clients can search profiles by the name of candidates.
+    \item F3.2: Clients can filter profiles based on skills (e.g. Java, Python).
+    \item F3.3: Clients can fitler profiles based on years of experience (e.g. 0 years, 5 years)
+    \end{itemize}
+    
+\item \textbf{F4. Admin Functionalities:}
+    \begin{itemize}
+    \item F4.1: Admin can create
+    profiles manually or using AI.
+    \item F4.2: Admins can modify profiles.
+    \item F4.3: Admin can delete profiles.
+    \item F4.4: Admin can delete a Users account.
+    \end{itemize}
+\end{itemize}
+\subsection{Non-Functional Requirements}
 
-\newpage
-\section{Technology Stack}
-\subsection{Core Components}
+The non-functional requirements define the overall quality attributes, performance expectations, and system constraints.
+
 \begin{itemize}
-    \item \textbf{Ollama/Llama3}: Locally-run LLM for semantic processing and information extraction
-    \item \textbf{Chroma DB}: Vector database for storing and retrieving document embeddings
-    \item \textbf{MongoDB}: NoSQL database for structured profile storage
-    \item \textbf{Python Backend}: LangChain framework for document processing pipeline
+\item \textbf{NF1. Performance:}
+    \begin{itemize}
+    \item NF1.1: Resume parsing (AI-assisted profile creation) should complete within 60 seconds under normal conditions for standard resumes ($\leq$5 pages).
+    \item NF1.2: All rest of API requests should take less than \textit{3 seconds} under normal load.
+    \item NF1.3: The system should support up to 50 concurrent users with an average response latency below 800 ms for non-AI endpoints.
+    \item NF1.4: The extracted text provided to Llama 3.2 model should be chunked and normalized to ensure stable processing for typical resume sizes.
+    \end{itemize}
+
+\item \textbf{NF2. Scalability:}
+    \begin{itemize}
+    \item NF2.1: The system architecture shall support horizontal scaling to accommodate future increases in users, profiles, or AI workload.
+    \item NF2.2: Components such as resume parsing, document processing, and AI extraction shall be modular and replaceable, allowing integration with other AI or OCR services (e.g., OpenAI models or AWS Textract) without major code changes.
+    \end{itemize}
+
+\item \textbf{NF3. Responsive UI:}
+    \begin{itemize}
+    \item NF3.1: The system must allow users to access and interact with all features on
+ desktop, tablet, and mobile devices.
+    \end{itemize}
+
+\item \textbf{NF4. Usability:}
+    \begin{itemize}
+        \item NF4.1: The system interface shall be intuitive and consistent, allowing clients and admins to perform core actions (upload, search, edit) with minimal navigation.
+        \item MF4.2: The upload process shall provide clear feedback (e.g., accepted file formats, upload progress, and success/failure status).
+        \item NF4.3: Error messages should be descriptive and guide users to corrective actions (e.g., unsupported format or invalid login).
+    \end{itemize}
+
+\item \textbf{NF5. Reliability:}
+    \begin{itemize}
+        \item Uploaded documents shall be stored temporarily and cleaned up after successful profile creation to avoid storage bloat.
+    \end{itemize}
+
+\item \textbf{NF6. Security:}
+    \begin{itemize}
+        \item NF6.1: User credentials shall be stored using secure password hashing algorithms (e.g., bcrypt).
+        \item NF6.2: Role-based access control (RBAC) shall enforce permission boundaries — only administrators can modify or delete other users and profiles.
+        \item NF6.3: The data extracted locally and shared to the AI model (Llama3.2) should not be shared outside the environment, as the model runs locally.
+    \end{itemize}
+
+\item \textbf{NF7. Maintainability:}
+    \begin{itemize}
+        \item  NF7.1: The codebase should follow modular design principles to support easy maintenance andfuture development.
+        \item NF7.2: Components should be reusable and structured according to React standards.
+    \end{itemize}
+
+\item \textbf{NF7. Availability:}
+    \begin{itemize}
+        \item NF7.1: The system should be available 99\% of the time, excluding scheduled maintenance periods.
+    \end{itemize}
+
 \end{itemize}
 
-\subsection{Supporting Libraries}
-\begin{itemize}
-    \item \textbf{PyPDFLoader}: PDF text extraction
-    \item \textbf{pytesseract}: OCR for image-based resumes
-    \item \textbf{python-pptx}: PowerPoint document processing
-    \item \textbf{OpenCV}: Image preprocessing for OCR
-\end{itemize}
+% \subsection{Use Case Diagram}
+% The following use case diagrams provide a high-level overview on how users interact with the system.
+\subsection{Use Case Diagrams}
+The following use case diagrams illustrate the interactions of different user roles within the AI-Powered Profile Application. 
+The diagrams are organized hierarchically, starting from unauthenticated users to authenticated users and their respective sub-roles (Candidates, Clients, and Admins).
 
-\newpage
-\section{Analysis}
-\subsection{Approach Comparison}
-The system evaluates three primary approaches for resume parsing:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.45\linewidth]{img/Figures/Unauth_user.png}
+    \caption{Use Case Diagram for an Unauthenticated User}
+    \label{fig:usecase-unauth}
+\end{figure}
 
-\subsubsection{Rule-Based Extraction (Regex)}
-\begin{itemize}
-    \item Pros: Simple implementation for fixed patterns
-    \item Cons: Fails with varied phrasing and document structures
-\end{itemize}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.45\linewidth]{img/Figures/Auth_User.png}
+    \caption{Use Case Diagram for an Authenticated User}
+    \label{fig:usecase-auth}
+\end{figure}
 
-\subsubsection{Named Entity Recognition (NER)}
-\begin{itemize}
-    \item Pros: Better semantic understanding than regex
-    \item Cons: Requires extensive labeled training data
-\end{itemize}
+\begin{figure}[h]
+    \centering
+    \subfloat[Candidate]{
+        \includegraphics[width=0.45\linewidth]{img/Figures/Candidate_User.png}
+        \label{fig:usecase-candidate}
+    }
+    \hfill
+    \subfloat[Client]{
+        \includegraphics[width=0.45\linewidth]{img/Figures/Client_user.png}
+        \label{fig:usecase-client}
+    } \\
+    \vspace{1em}
+    \subfloat[Admin]{
+        \includegraphics[width=0.45\linewidth]{img/Figures/Admin_User.png}
+        \label{fig:usecase-admin}
+    }
+    \caption{Use Case Diagrams for Authenticated User Roles: (a) Candidate, (b) Client, and (c) Admin}
+    \label{fig:usecase-auth-roles}
+\end{figure}
 
-\subsubsection{Large Language Model (LLM)}
-\begin{itemize}
-    \item Pros: Handles format variability and implicit information
-    \item Cons: Potential hallucinations and computational cost
-\end{itemize}
+    \section{Technology Stack}
+        \subsection{Backend Technologies}
+            \subsubsection{Python}
+            Python was chosen as the primary programming language due to its readability, versatility, and large ecosystem of libraries that support web development, data processing, and artificial intelligence tasks \cite{python_docs}.
+            \subsubsection{FastAPI Framework}
+            FastAPI is a modern, high-performance web framework for building APIs in Python \cite{fastapi_docs}. 
+            It supports asynchronous programming, automatic generation of OpenAPI documentation, and native integration with Pydantic for type-safe request validation. 
+            These features make it ideal for developing the RESTful backend and AI integration endpoints in this system.
+            
+            \subsubsection{Pydantic for Data Validation}
+            Pydantic is used to define data models that validate and serialize API inputs and outputs based on Python type hints \cite{pydantic_docs}. 
+            This ensures data integrity across user profiles, authentication requests, and parsed resume data structures.
+            
+            \subsubsection{JWT Token Authentication}
+            The system uses JSON Web Tokens (JWT) for secure, stateless authentication \cite{jwt_docs}. 
+            Each token includes encoded user information, ensuring that only authenticated and authorized users can access protected routes.
+            
+            \subsubsection{OAuth2 Password Flow}
+            The authentication mechanism implements the OAuth2 Password Grant Flow to handle secure token-based login and session management \cite{oauth2_docs}. 
+            FastAPI provides inbuilt support for this flow, ensuring compliance with modern authentication standards.
+            
+        \subsection{Database and Integrations}
+            \subsubsection{MongoDB Database}
+            MongoDB serves as the primary database for storing user information, resumes, and AI-parsed profile data \cite{mongodb_docs}. 
+            Its schema-less structure provides flexibility for storing variable-length resume content and supports advanced query operations, such as filtering by skills or experience.
+            
+            \subsubsection{AI and Document Processing Modules}
+            The system integrates various tools for AI-assisted document parsing and text extraction. 
+            Tesseract OCR is employed for text extraction from image-based resumes \cite{tesseract_docs}, while \texttt{python-docx} and \texttt{python-pptx} are used for parsing Microsoft Word and PowerPoint formats, respectively. 
+            The parsed data is further processed using the Llama 3.2 model, which enhances contextual understanding and classification accuracy of resume content \cite{llama_docs}.
+            
+            \subsubsection{File Upload and Parsing Pipeline}
+            The application supports uploads in PDF, PPTX, and image formats. 
+            Each uploaded file is processed through a pipeline that includes text extraction, AI-assisted interpretation, and structured JSON generation for database insertion. 
+            This modular architecture enables easy expansion to new formats and AI models in the future.
+        \subsection{Frontend Technologies}
+        \subsection{AI Integration}
+        The system integrates various tools for AI-assisted document parsing and text extraction, one of which is the Llama 3.2.
+            \subsubsection{Llama 3.2}
+             The \textit{Meta Llama 3.2} collection consists of multilingual large language models (LLMs) that are pretrained and instruction-tuned for text generation and understanding tasks. The family includes models of various parameter sizes, primarily the 1B and 3B variants \cite{llama_docs}.
+             
+            We are using the 3B parameter model which is a default configuration. The reason being the use case for our application and trade-offs between performance and resource consumption. 
 
-\subsection{Selected Architecture}
-The implemented solution uses LLM as the primary extraction method with the following workflow:
-\begin{enumerate}
-    \item Document preprocessing (format-specific text extraction)
-    \item Text chunking (1500 tokens with 200 overlap)
-    \item Vector embedding generation (Ollama embeddings)
-    \item Semantic search via Chroma DB
-    \item LLM-powered structured extraction with JSON output
-    \item MongoDB storage for final profiles
-\end{enumerate}
+            The 3B model offers an optimal balance between performance and efficiency for this system. It demonstrates higher accuracy and contextual understanding than the smaller 1B variant, particularly for summarization and structured text extraction tasks, while outperforming similar-sized models such as Gemma 2 (2.6B) and Phi 3.5-mini on benchmarks relevant to resume parsing. Unlike larger models (e.g., Llama 3.1 70B), the 3B variant operates efficiently on local hardware without distributed GPU resources, aligning with the project’s goal of offline, cost-effective inference.
 
-\newpage
-\section{Current Implementation}
-\subsection{Completed Components}
-\begin{itemize}
-    \item Document processing pipeline for PDF, PPTX, and image formats
-    \item Text chunking and embedding generation system
-    \item Chroma DB vector store implementation
-    \item LLM querying with structured JSON output
-    \item MongoDB integration for profile storage
-\end{itemize}
+        \subsection{External APIs}
+            \subsubsection{LangChain Integration}
+          LangChain is a framework for building applications powered by large language models (LLMs). It provides a unified interface to access LLMs and related components such as embedding models, vector stores, and prompt management tools, with support for integration across multiple providers \cite{langchain}. 
 
-\subsection{Key Code Implementation}
-The implementation handles document processing through a modular pipeline:
+        In this project, LangChain is used to manage the AI-assisted document parsing workflow. It handles the loading of PDF resumes through its \textit{PyPDFLoader} module, splits the extracted text into manageable chunks for efficient processing, manages prompts for interacting with the LLM, and parses the model’s responses into structured Pydantic models. This integration ensures a consistent and reliable flow between document ingestion, preprocessing, and structured data generation.
+        
+            
+            \subsubsection{OCR with Tesseract and OpenCV}
 
-\begin{verbatim}
-def load_file(path):
-    if path.endswith(".pdf"):
-        loader = PyPDFLoader(path)
-        return loader.load()
-    elif path.endswith(".pptx"):
-        # PPTX processing logic
-    elif image_format(path):
-        # OCR processing logic
-\end{verbatim}
+            In order to handle resumes in image formats (jpg, jpeg, and .png), we use pytesseract and OpenCV. Python-tesseract is an optical character recognition (OCR) tool for Python. That is, it will recognize and “read” the text embedded in images \cite{pytesseract}.
+            OpenCV is an open source computer vision tool that is used to preprocess and analyze images with efficiency \cite{opencv_gfg}.
+            In the application OpenCV helps in preparing the image for processing the texts which is handled by pytesseract by converting the texts in image to strings. This way the text is extracted from image type resumes or CV's.
 
-Chunking and embedding generation:
+\section{System Architecture}
+    \subsection{Presentation Layer: Fourth}
+        \subsubsection{API Endpoints Structure}
+        \subsubsection{Request/Response Models}
+        Decouple the server part and only keep specific to client.
+        \subsubsection{System Navigation }
+    \subsection{Business Logic Layer: Second}
+        \subsubsection{Authentication Module}
+        \subsubsection{User Management Module}
+        \subsubsection{Profile Management Module}
+        \subsubsection{Document Processing Module}
+    \subsection{Data Layer}
+        \subsubsection{Database Manager: Third}
+        \subsubsection{Data Models}
+    \subsection{External Services Integration: Put first}
+    Describe this in some text before subsections, decide based on first draft.
+    \subsection{System Interfaces and DataFlow}
 
-\begin{verbatim}
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1500, chunk_overlap=200)
-chunks = text_splitter.split_documents(text)
-embeddings = OllamaEmbeddings(model="llama3.2")
-\end{verbatim}
 
-\subsection{Challenges and Solutions}
-\begin{itemize}
-    \item \textbf{Context Window Limitations}: Addressed through intelligent chunking with overlap
-    \item \textbf{Document Format Variability}: Handled by format-specific extraction modules
-    \item \textbf{Data Privacy}: Ensured through local LLM execution (Ollama).
-\end{itemize}
-
-\newpage
+\section{Implementation}
+Main intersting part of implementation/smart/difficult.
+- snippet - high level
+- avoid exact source code
+- subsections can be similar to architecture.
 \section{Testing}
-\subsection{Manual Tests}
-\subsection{Automated Tests}
-\section{Future Work}
-\begin{itemize}
-    \item Front-end development (React-based interface)
-    \item User validation and testing with real-world resumes
-    \item Performance optimization for large document sets
-    \item Enhanced error handling for OCR failures
-    \item Testing the Application
-\end{itemize}
+    \subsection{Test Environment}
+    \subsection{Unit Testing}
+    \subsection{Integration Testing}
+    \subsection{Performance Testing}
+    \subsection{Manual Testing}
+    \subsection{Requirements Validation}
+    \subsection{Summary of Testing}
 
 \section{Conclusion}
-The current implementation demonstrates the feasibility of using local LLMs for automated resume parsing while addressing privacy concerns. The hybrid database approach combines the strengths of vector search for semantic understanding with structured storage for exact filtering. Future work will focus on completing the full-stack implementation and optimizing the pipeline for production use.
-
-%--------------------------------------------
-% Literatura
-%--------------------------------------------
+    \subsection{Summary}
+    \subsection{Challenges Faced}
+    \subsection{Future Work}
+\appendix
+    Store pointer to the source code, table, figures, pointer to User guide (could be in github), Installation guide.
+Define extra section: Dictionary.
 \cleardoublepage % Zaczynamy od nieparzystej strony
 \printbibliography
+\listoffigures
+\listoftables
 
-%--------------------------------------------
-% Spisy (opcjonalne)
-%--------------------------------------------
-\newpage
-\pagestyle{plain}
-
-\vspace{0.8cm}
-\acronymlist
-\acronym{EiTI}{Wydział Elektroniki i Technik Informacyjnych}
-\acronym{PW}{Politechnika Warszawska}
-
-
-\listoffigurestoc     % Spis rysunków.
-\vspace{1cm}          % vertical space
-\listoftablestoc      % Spis tabel.
-\vspace{1cm}          % vertical space
-\listofappendicestoc  % Spis załączników
-
-% Załączniki
-\newpage
-\appendix{Nazwa załącznika 1}
-
-
-\newpage
-\appendix{Nazwa załącznika 2}
-
-\end{document} % Dobranoc.
+\end{document}
