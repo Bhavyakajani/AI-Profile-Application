@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Depends
@@ -6,7 +7,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from profile_app.models.request_models import Token
 from profile_app.database.dbManager import user_db
-from profile_app.authentication.jwt_token import create_access_token
+from profile_app.authentication.jwt_token import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
 from ..utils import app_util as util
 
 router = APIRouter(
@@ -25,6 +26,7 @@ def login(request: Annotated[OAuth2PasswordRequestForm, Depends()]):
 
     # Generate JWT
     access_token = create_access_token(
-        data={"sub": user_dict["email"]}
+        data={"sub": user_dict["email"]},
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     return Token(access_token=access_token, token_type="bearer")

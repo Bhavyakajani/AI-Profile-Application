@@ -10,12 +10,12 @@ from passlib.context import CryptContext
 from profile_app.models.request_models import ProfileModel
 from profile_app.models.response_models import ProfileResponse
 
-pwd_context = CryptContext(schemes=['bcrypt'], deprecated = "auto")
+pwd_context = CryptContext(schemes=['argon2'], deprecated = "auto")
 database = db.DbManager("candidates")
 
 def hash_password(user_dict) -> dict:
     """
-    Hashing the password from string to bcrypt type encryption
+    Hashing the password from string to argon2 type encryption
     Input: dict = Dictionary of User Details
 
     """

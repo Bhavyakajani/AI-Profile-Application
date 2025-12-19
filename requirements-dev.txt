@@ -1,8 +1,40 @@
-passlib
-bcrypt==4.0.1
-pydantic
+# Web Framework
 fastapi
+uvicorn
+
+# Database
 pymongo
+
+# Data Validation
+pydantic
+
+# Document Processing
+python-pptx
+opencv-python
+pytesseract
+langchain
+langchain-community
+langchain-ollama
+
+# PDF Processing
+pypdf
+
+# Data Types
+python-multipart
+typing-extensions
+
+# Testing
+pytest
+
+# BSON handling for MongoDB
+# bson
+
+# Authentication
+passlib[bcrypt]
+argon2-cffi
+bcrypt
 python-jose
 pyjwt
-python-multipart
+
+pydantic[email]
+email-validator

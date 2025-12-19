@@ -86,6 +86,11 @@ class DbManager:
         return self.collection.find_one_and_update(
             {"_id": oid_user}, {"$set": user}, return_document=ReturnDocument.AFTER
         )
+    
+    async def search_user_by_name(self, name: str) -> dict | None:
+        regex = {"$regex": name, "$options": "i"}
+        results = await self.collection.find({"name": regex}).to_list(10)
+        return results
 
     def convert_objectid(self, doc: dict) -> dict | Mapping[str, Any]:
         if "_id" in doc and isinstance(doc["_id"], ObjectId):
