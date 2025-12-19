@@ -90,3 +90,14 @@ async def parse_profile(file: UploadFile, current_user: Annotated[TokenData, Dep
     if not profile_model :
         return HTTPException(status_code=400, detail="Profile exists or an error might have occurred")
     return profile_model
+
+@router.get('/search', status_code=200, response_model=ProfilesListResponse)
+async def get_profile_by_name(query: str, response: Response, current_user: Annotated[User, Depends(get_current_user)]):
+    # Validate if id is of correct type ObjectId
+    profiles = await profile_db.search_user_by_name(name=query)
+    # Validation
+    if not profiles:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        raise HTTPException(status_code=404, detail=f"Profile with name: {query} not found")
+    profiles = [ProfileResponse(**profile) for profile in profiles]
+    return ProfilesListResponse(total_count=len(profiles), profiles=profiles)
