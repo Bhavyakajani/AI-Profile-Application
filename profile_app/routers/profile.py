@@ -48,6 +48,21 @@ def create_profile(
     
     raise HTTPException(status_code=400, detail="Failed to create profile")
 
+@router.get('/search', status_code=200, response_model=ProfilesListResponse)
+async def get_profile_by_name(
+    query: str,
+    response: Response,
+    profile_repo: Annotated[ProfileRepository, Depends(get_profile_repository)]
+):
+    # search_by_name is synchronous (uses PyMongo) so call it directly
+    profiles = profile_repo.search_by_name(query)
+    # Validation
+    if not profiles:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        raise HTTPException(status_code=404, detail=f"Profile with name: {query} not found")
+    profiles = [ProfileResponse(**profile) for profile in profiles]
+    return ProfilesListResponse(total_count=len(profiles), profiles=profiles)
+
 @router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete_profile_by_id(
     id: str,
@@ -112,17 +127,3 @@ async def parse_profile(
         raise HTTPException(status_code=400, detail="Profile exists or an error might have occurred")
     return profile_model
 
-@router.get('/search', status_code=200, response_model=ProfilesListResponse)
-async def get_profile_by_name(
-    query: str,
-    response: Response,
-    current_user: Annotated[User, Depends(get_current_user)],
-    profile_repo: Annotated[ProfileRepository, Depends(get_profile_repository)]
-):
-    profiles = await profile_repo.search_by_name(query)
-    # Validation
-    if not profiles:
-        response.status_code = status.HTTP_404_NOT_FOUND
-        raise HTTPException(status_code=404, detail=f"Profile with name: {query} not found")
-    profiles = [ProfileResponse(**profile) for profile in profiles]
-    return ProfilesListResponse(total_count=len(profiles), profiles=profiles)

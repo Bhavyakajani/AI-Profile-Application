@@ -84,21 +84,23 @@ class ProfileRepository(BaseRepository[ProfileModel]):
         """
         return self.exists({"creator": creator_email})
     
-    async def search_by_name(self, name: str, limit: int = 10) -> List[Dict[str, Any]]:
+    def search_by_name(self, name: str, limit: int = 10) -> List[Dict[str, Any]]:
         """
         Search profiles by name using regex (case-insensitive).
-        
+
         Args:
             name: Name pattern to search for
             limit: Maximum number of results to return
-            
+
         Returns:
             List of matching profile documents
         """
         try:
+            # Use a proper regex filter with case-insensitive option
             regex_filter = {"$regex": name, "$options": "i"}
             cursor = self.collection.find({"name": regex_filter}).limit(limit)
-            docs = await cursor.to_list(length=limit)
+            docs = list(cursor)
+            print(f"Found {len(docs)} profiles matching name: {name}")
             return self._convert_objectid_list(docs)
         except Exception as e:
             print(f"Error searching profiles by name: {e}")
