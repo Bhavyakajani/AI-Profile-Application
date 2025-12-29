@@ -1,14 +1,3 @@
-# --------Flask API ----------------------
-# from flask import Flask, render_template
-#
-#
-# app = Flask(__name__)
-#
-# @app.route('/')
-# def index():
-#     return "Hello World!"
-# -----------FAST API-----------------------
-
 from fastapi import FastAPI
 from profile_app.routers import profile, user, auth
 

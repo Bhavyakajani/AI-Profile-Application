@@ -2,6 +2,7 @@
 Database connection manager using Singleton pattern.
 Handles MongoDB connection lifecycle and provides access to database and collections.
 """
+import os
 from typing import Optional
 from pymongo import MongoClient
 from pymongo.database import Database
@@ -12,6 +13,16 @@ class DatabaseConnection:
     """
     Singleton class for managing MongoDB database connections.
     Ensures only one connection instance exists throughout the application.
+
+    Behavior:
+    - Reads connection info from environment variables so you can separate
+      prod and test DBs easily:
+        * MONGO_URI (optional): full MongoDB URI
+        * MONGO_HOST (default: localhost)
+        * MONGO_PORT (default: 27017)
+        * MONGO_DB_NAME (default: ProfileDB)
+        * MONGO_TEST_DB_NAME (default: ProfileDB_test)
+        * TESTING (set to "1" to use test DB)
     """
     _instance: Optional['DatabaseConnection'] = None
     _client: Optional[MongoClient] = None
@@ -26,17 +37,28 @@ class DatabaseConnection:
         if self._client is None:
             self._connect()
     
-    def _connect(self, host: str = 'localhost', port: int = 27017, db_name: str = 'ProfileDB'):
+    def _connect(self, host: Optional[str] = None, port: Optional[int] = None, db_name: Optional[str] = None):
         """
-        Establish connection to MongoDB.
-        
-        Args:
-            host: MongoDB host address
-            port: MongoDB port number
-            db_name: Database name
+        Establish connection to MongoDB. Values may be provided directly or via
+        environment variables.
         """
+        # Environment-aware defaults
+        testing = os.getenv("TESTING", "0") == "1"
+        host = host or os.getenv("MONGO_HOST", "localhost")
+        port = port or int(os.getenv("MONGO_PORT", "27017"))
+
+        if testing:
+            db_name = db_name or os.getenv("MONGO_TEST_DB_NAME", "ProfileDB_test")
+        else:
+            db_name = db_name or os.getenv("MONGO_DB_NAME", "ProfileDB")
+
+        mongo_uri = os.getenv("MONGO_URI")
+
         try:
-            self._client = MongoClient(host, port)
+            if mongo_uri:
+                self._client = MongoClient(mongo_uri)
+            else:
+                self._client = MongoClient(host, port)
             self._db = self._client[db_name]
             print(f"Connected to MongoDB database: {db_name}")
         except Exception as e:
