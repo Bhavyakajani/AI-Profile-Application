@@ -1,6 +1,7 @@
+from typing import List, Optional
 from fastapi import UploadFile, File
-from pydantic import Field, EmailStr
-from .sub_models import *
+from pydantic import BaseModel, Field, EmailStr
+from .sub_models import Education, WorkExperience, Skills
 
 class LoginRequest(BaseModel):
     """Auth Request Body"""
@@ -63,7 +64,7 @@ class User(BaseModel):
     email: EmailStr
     password: str
     role: str
-    profiles: Optional[List[ProfileModel]] = []
+    profiles: Optional[List[ProfileModel]] = None
 
 class ProfileUpdateRequest(BaseModel):
     name: Optional[str] = None
