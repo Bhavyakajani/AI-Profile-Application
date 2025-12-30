@@ -2,8 +2,6 @@ import pytest
 
 from httpx import AsyncClient
 
-from profile_app.models.request_models import ProfileCreateRequest, ProfileModel
-
 @pytest.fixture()
 async def get_all_profiles(async_client: AsyncClient):
     """Helper to get all profiles via the API and return the list of profiles."""
