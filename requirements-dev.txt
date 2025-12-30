@@ -7,6 +7,7 @@ pymongo
 
 # Data Validation
 pydantic
+pydantic-settings
 
 # Document Processing
 python-pptx
@@ -38,3 +39,5 @@ pyjwt
 
 pydantic[email]
 email-validator
+
+python-dotenv
