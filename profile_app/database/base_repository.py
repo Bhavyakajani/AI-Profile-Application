@@ -66,7 +66,7 @@ class BaseRepository(ABC, Generic[T]):
         return id
     
     @abstractmethod
-    def create(self, entity: T) -> Optional[str]:
+    async def create(self, entity: T) -> Optional[str]:
         """
         Create a new entity in the database.
         
@@ -78,7 +78,7 @@ class BaseRepository(ABC, Generic[T]):
         """
         pass
     
-    def find_by_id(self, id: str | ObjectId) -> Optional[Dict[str, Any]]:
+    async def find_by_id(self, id: str | ObjectId) -> Optional[Dict[str, Any]]:
         """
         Find an entity by its ID.
         
@@ -90,13 +90,13 @@ class BaseRepository(ABC, Generic[T]):
         """
         try:
             oid = self._to_objectid(id)
-            doc = self.collection.find_one({"_id": oid})
+            doc = await self.collection.find_one({"_id": oid})
             return self._convert_objectid(doc)
         except Exception as e:
             print(f"Error finding entity by ID: {e}")
             return None
     
-    def find_all(self, limit: Optional[int] = None, skip: int = 0) -> List[Dict[str, Any]]:
+    async def find_all(self, limit: Optional[int] = None, skip: int = 0) -> List[Dict[str, Any]]:
         """
         Find all entities in the collection.
         
@@ -108,7 +108,7 @@ class BaseRepository(ABC, Generic[T]):
             List of entity documents
         """
         try:
-            query = self.collection.find().skip(skip)
+            query = await self.collection.find().skip(skip)
             if limit:
                 query = query.limit(limit)
             docs = list(query)
@@ -117,7 +117,7 @@ class BaseRepository(ABC, Generic[T]):
             print(f"Error finding all entities: {e}")
             return []
     
-    def count(self) -> int:
+    async def count(self) -> int:
         """
         Count total number of entities in the collection.
         
@@ -125,12 +125,12 @@ class BaseRepository(ABC, Generic[T]):
             Total count of entities
         """
         try:
-            return self.collection.estimated_document_count()
+            return await self.collection.estimated_document_count()
         except Exception as e:
             print(f"Error counting entities: {e}")
             return 0
     
-    def update(self, id: str | ObjectId, update_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    async def update(self, id: str | ObjectId, update_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
         Update an entity by ID.
         
@@ -144,7 +144,7 @@ class BaseRepository(ABC, Generic[T]):
         try:
             oid = self._to_objectid(id)
             from pymongo import ReturnDocument
-            result = self.collection.find_one_and_update(
+            result = await self.collection.find_one_and_update(
                 {"_id": oid},
                 {"$set": update_data},
                 return_document=ReturnDocument.AFTER
@@ -154,7 +154,7 @@ class BaseRepository(ABC, Generic[T]):
             print(f"Error updating entity: {e}")
             return None
     
-    def delete(self, id: str | ObjectId) -> bool:
+    async def delete(self, id: str | ObjectId) -> bool:
         """
         Delete an entity by ID.
         
@@ -166,13 +166,13 @@ class BaseRepository(ABC, Generic[T]):
         """
         try:
             oid = self._to_objectid(id)
-            result = self.collection.delete_one({"_id": oid})
+            result = await self.collection.delete_one({"_id": oid})
             return result.deleted_count > 0
         except Exception as e:
             print(f"Error deleting entity: {e}")
             return False
     
-    def exists(self, filter: Dict[str, Any]) -> bool:
+    async def exists(self, filter: Dict[str, Any]) -> bool:
         """
         Check if an entity exists matching the filter.
         
@@ -182,8 +182,11 @@ class BaseRepository(ABC, Generic[T]):
         Returns:
             True if entity exists, False otherwise
         """
+        print("exists filter:", filter)
         try:
-            return self.collection.find_one(filter) is not None
+            res = await self.collection.find_one(filter) is not None
+            print("exists result:", res)
+            return res
         except Exception as e:
             print(f"Error checking entity existence: {e}")
             return False

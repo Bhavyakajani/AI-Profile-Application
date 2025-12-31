@@ -2,12 +2,12 @@
 Database connection manager using Singleton pattern.
 Handles MongoDB connection lifecycle and provides access to database and collections.
 """
-import os
 from typing import Optional
-from pymongo import MongoClient
+from pymongo import AsyncMongoClient
 from pymongo.database import Database
 from pymongo.collection import Collection
 
+from profile_app.config import config
 
 class DatabaseConnection:
     """
@@ -25,7 +25,7 @@ class DatabaseConnection:
         * TESTING (set to "1" to use test DB)
     """
     _instance: Optional['DatabaseConnection'] = None
-    _client: Optional[MongoClient] = None
+    _client: Optional[AsyncMongoClient] = None
     _db: Optional[Database] = None
     
     def __new__(cls):
@@ -42,25 +42,31 @@ class DatabaseConnection:
         Establish connection to MongoDB. Values may be provided directly or via
         environment variables.
         """
-        # Environment-aware defaults
-        testing = os.getenv("TESTING", "0") == "1"
-        host = host or os.getenv("MONGO_HOST", "localhost")
-        port = port or int(os.getenv("MONGO_PORT", "27017"))
+        # # Environment-aware defaults
+        # testing = os.getenv("TESTING", "0") == "1"
+        # host = host or os.getenv("MONGO_HOST", "localhost")
+        # port = port or int(os.getenv("MONGO_PORT", "27017"))
 
-        if testing:
-            db_name = db_name or os.getenv("MONGO_TEST_DB_NAME", "ProfileDB_test")
-        else:
-            db_name = db_name or os.getenv("MONGO_DB_NAME", "ProfileDB")
+        # if testing:
+        #     db_name = db_name or os.getenv("MONGO_TEST_DB_NAME", "ProfileDB_test")
+        # else:
+        #     db_name = db_name or os.getenv("MONGO_DB_NAME", "ProfileDB")
 
-        mongo_uri = os.getenv("MONGO_URI")
+        # mongo_uri = os.getenv("MONGODB_URI")
 
+        DB_URI = config.MONGODB_URI
+        DB_NAME = config.DB_NAME
+        HOST = host or config.MONGO_HOST
+        PORT = port or config.MONGO_PORT
+        print(f"From connection file, configuring to: {config.__class__.__name__} ")
         try:
-            if mongo_uri:
-                self._client = MongoClient(mongo_uri)
+            if DB_URI:
+                self._client = AsyncMongoClient(DB_URI)
             else:
-                self._client = MongoClient(host, port)
-            self._db = self._client[db_name]
-            print(f"Connected to MongoDB database: {db_name}")
+                self._client = AsyncMongoClient(HOST, PORT)
+            self._db = self._client[DB_NAME]
+            print(f"Connected to MongoDB database: {DB_NAME}")
+            print(str(config))
         except Exception as e:
             print(f"Error connecting to MongoDB: {e}")
             raise

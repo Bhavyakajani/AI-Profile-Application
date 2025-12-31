@@ -13,7 +13,7 @@ router = APIRouter(
     tags=['Users']
 )
 @router.post('/', response_model=UserCreateResponse)
-def create_user(
+async def create_user(
     user: User,
     user_repo: Annotated[UserRepository, Depends(get_user_repository)]
 ):
@@ -21,15 +21,15 @@ def create_user(
         raise HTTPException(status_code=402, detail='Bad Request: Invalid User Details')
     
     # Check if user already exists
-    if user_repo.exists_by_email(user.email):
+    if await user_repo.exists_by_email(user.email):
         raise HTTPException(status_code=409, detail=f"User with email {user.email} already exists")
     
     user_dict = user.model_dump()
     user_dict = util.hash_password(user_dict)
-    new_user_id = user_repo.create(user_dict)
+    new_user_id = await user_repo.create(user_dict)
     
     if new_user_id:
-        new_user = user_repo.find_by_id(new_user_id)
+        new_user = await user_repo.find_by_id(new_user_id)
         if new_user:
             return UserCreateResponse(
                 id=str(new_user["_id"]),

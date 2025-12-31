@@ -24,7 +24,7 @@ class ProfileRepository(BaseRepository[ProfileModel]):
         """
         super().__init__(collection)
     
-    def create(self, profile: ProfileModel) -> Optional[str]:
+    async def create(self, profile: ProfileModel) -> Optional[str]:
         """
         Create a new profile in the database.
         
@@ -36,14 +36,14 @@ class ProfileRepository(BaseRepository[ProfileModel]):
         """
         try:
             profile_dict = profile.model_dump()
-            result = self.collection.insert_one(profile_dict)
+            result = await self.collection.insert_one(profile_dict)
             print(f"Profile created with ID: {result.inserted_id}")
             return str(result.inserted_id)
         except Exception as e:
             print(f"Error creating profile: {e}")
             return None
     
-    def find_by_creator(self, creator_email: str) -> Optional[Dict[str, Any]]:
+    async def find_by_creator(self, creator_email: str) -> Optional[Dict[str, Any]]:
         """
         Find a profile by creator email.
         
@@ -54,13 +54,13 @@ class ProfileRepository(BaseRepository[ProfileModel]):
             Profile document or None if not found
         """
         try:
-            doc = self.collection.find_one({"creator": creator_email})
+            doc = await self.collection.find_one({"creator": creator_email})
             return self._convert_objectid(doc)
         except Exception as e:
             print(f"Error finding profile by creator: {e}")
             return None
     
-    def exists_by_name(self, name: str) -> bool:
+    async def exists_by_name(self, name: str) -> bool:
         """
         Check if a profile exists with the given name.
         
@@ -70,9 +70,9 @@ class ProfileRepository(BaseRepository[ProfileModel]):
         Returns:
             True if profile exists, False otherwise
         """
-        return self.exists({"name": name})
-    
-    def exists_by_creator(self, creator_email: str) -> bool:
+        return await self.exists({"name": name})
+
+    async def exists_by_creator(self, creator_email: str) -> bool:
         """
         Check if a profile exists for the given creator.
         
@@ -82,9 +82,9 @@ class ProfileRepository(BaseRepository[ProfileModel]):
         Returns:
             True if profile exists, False otherwise
         """
-        return self.exists({"creator": creator_email})
-    
-    def search_by_name(self, name: str, limit: int = 10) -> List[Dict[str, Any]]:
+        return await self.exists({"creator": creator_email})
+
+    async def search_by_name(self, name: str, limit: int = 10) -> List[Dict[str, Any]]:
         """
         Search profiles by name using regex (case-insensitive).
 
@@ -98,7 +98,7 @@ class ProfileRepository(BaseRepository[ProfileModel]):
         try:
             # Use a proper regex filter with case-insensitive option
             regex_filter = {"$regex": name, "$options": "i"}
-            cursor = self.collection.find({"name": regex_filter}).limit(limit)
+            cursor = await self.collection.find({"name": regex_filter}).limit(limit)
             docs = list(cursor)
             print(f"Found {len(docs)} profiles matching name: {name}")
             return self._convert_objectid_list(docs)
@@ -106,7 +106,7 @@ class ProfileRepository(BaseRepository[ProfileModel]):
             print(f"Error searching profiles by name: {e}")
             return []
     
-    def update_profile(self, id: str | ObjectId, profile: ProfileModel) -> Optional[Dict[str, Any]]:
+    async def update_profile(self, id: str | ObjectId, profile: ProfileModel) -> Optional[Dict[str, Any]]:
         """
         Update a profile with new data.
         
@@ -118,9 +118,9 @@ class ProfileRepository(BaseRepository[ProfileModel]):
             Updated profile document or None if not found
         """
         profile_dict = profile.model_dump()
-        return self.update(id, profile_dict)
-    
-    def find_by_creator_email(self, creator_email: str, limit: Optional[int] = None) -> List[Dict[str, Any]]:
+        return await self.update(id, profile_dict)
+
+    async def find_by_creator_email(self, creator_email: str, limit: Optional[int] = None) -> List[Dict[str, Any]]:
         """
         Find all profiles created by a specific user.
         
@@ -132,7 +132,7 @@ class ProfileRepository(BaseRepository[ProfileModel]):
             List of profile documents
         """
         try:
-            query = self.collection.find({"creator": creator_email})
+            query = await self.collection.find({"creator": creator_email})
             if limit:
                 query = query.limit(limit)
             docs = list(query)

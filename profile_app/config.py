@@ -1,11 +1,19 @@
 from functools import lru_cache
 from typing import Optional
-from fastapi import FastAPI
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from dotenv import load_dotenv
 import os
-load_dotenv()
+_ENV_PATH = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv(_ENV_PATH)
+
+"""
+Configure an envoironment:
+1. create a sub-class of GlobalConfig named <EnvName>Config
+2. Set the model config from SettingsConfigDict with env_prefix="<ENVNAME>_"
+3. Add necessary variables like DB_URI, DB_NAME, Collection names either in ENV file or if to be kept constant throughout environments, set them in the class directly.
+4. Add the class to the configs dict in get_config function.
+"""
 
 class Settings(BaseSettings):
     app_name: str = "Profile Application"
@@ -19,6 +27,8 @@ class GlobalConfig(Settings):
     USERS_COLLECTION: str ="users"
     CANDIDATES_COLLECTION: str ="candidates"
     DB_NAME: str = None
+    MONGO_HOST: str = "localhost"
+    MONGO_PORT: int = 27017
 
 class DevConfig(GlobalConfig):
     model_config = SettingsConfigDict(env_prefix="DEV_")
@@ -33,7 +43,8 @@ class ProdConfig(GlobalConfig):
     model_config = SettingsConfigDict(env_prefix="PROD_")
 
 @lru_cache
-def get_config(env_state: str) -> GlobalConfig:
+def get_config(env_state: Optional[str] = None) -> GlobalConfig:
+    print(f"Getting config for env_state: {env_state}")
     configs = {
         "dev": DevConfig,
         "test": TestConfig,
@@ -43,4 +54,4 @@ def get_config(env_state: str) -> GlobalConfig:
     return configs[env_state.lower()]()
 
 config = get_config(Settings().ENV_STATE)
-print(f"Loaded configuration for environment: {str(config)}")
+print(f"Loaded configuration for environment: {config.__class__.__name__}")
