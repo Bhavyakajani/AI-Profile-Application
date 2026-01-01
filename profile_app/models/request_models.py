@@ -64,7 +64,7 @@ class User(BaseModel):
     email: EmailStr
     password: str
     role: str
-    profiles: Optional[List[ProfileModel]] = None
+    profiles: Optional[List[ProfileModel]] = []
 
 class ProfileUpdateRequest(BaseModel):
     name: Optional[str] = None
