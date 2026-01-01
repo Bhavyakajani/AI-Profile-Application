@@ -1,7 +1,6 @@
 import os
 # Ensure tests use the test database - set before importing app or db_connection
-os.environ.setdefault("TESTING", "1")
-os.environ.setdefault("MONGO_TEST_DB_NAME", "ProfileDB_test")
+os.environ["ENV_STATE"] = "test"
 
 from typing import AsyncGenerator, Generator
 
@@ -23,14 +22,17 @@ def client() -> Generator:
 @pytest.fixture(autouse=True)
 async def db() -> AsyncGenerator:
     """Clear the test database before and after each test for isolation."""
+    # Ensure the async client is created in the event loop running the tests
+    await db_connection._connect()
     database = db_connection.get_database()
     # Drop database before test
-    database.client.drop_database(database.name)
+    await database.client.drop_database(database.name)
     try:
         yield
     finally:
-        # Drop database after test
-        database.client.drop_database(database.name)
+        # Drop database after test and close connection
+        await database.client.drop_database(database.name)
+        await db_connection.close()
 
 
 @pytest.fixture()

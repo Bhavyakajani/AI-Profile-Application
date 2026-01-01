@@ -34,26 +34,16 @@ class DatabaseConnection:
         return cls._instance
     
     def __init__(self):
-        if self._client is None:
-            self._connect()
+        # Do not create the async client at import time; it must be created
+        # inside the running asyncio event loop. Call `await db_connection._connect()`
+        # from application startup or test setup instead.
+        return
     
-    def _connect(self, host: Optional[str] = None, port: Optional[int] = None, db_name: Optional[str] = None):
+    async def _connect(self, host: Optional[str] = None, port: Optional[int] = None, db_name: Optional[str] = None):
         """
-        Establish connection to MongoDB. Values may be provided directly or via
-        environment variables.
+        Establish async connection to MongoDB. Must be called from within an
+        active asyncio event loop (e.g. at app startup or inside tests).
         """
-        # # Environment-aware defaults
-        # testing = os.getenv("TESTING", "0") == "1"
-        # host = host or os.getenv("MONGO_HOST", "localhost")
-        # port = port or int(os.getenv("MONGO_PORT", "27017"))
-
-        # if testing:
-        #     db_name = db_name or os.getenv("MONGO_TEST_DB_NAME", "ProfileDB_test")
-        # else:
-        #     db_name = db_name or os.getenv("MONGO_DB_NAME", "ProfileDB")
-
-        # mongo_uri = os.getenv("MONGODB_URI")
-
         DB_URI = config.MONGODB_URI
         DB_NAME = config.DB_NAME
         HOST = host or config.MONGO_HOST
@@ -95,17 +85,22 @@ class DatabaseConnection:
         db = self.get_database()
         return db[collection_name]
     
-    def close(self):
+    async def close(self):
         """Close the MongoDB connection."""
         if self._client:
-            self._client.close()
+            # AsyncMongoClient.close() is a regular method; calling it from the
+            # same loop is fine. We implement close as async so callers can
+            # await it consistently from async contexts.
+            await self._client.close()
             self._client = None
             self._db = None
             print("Database connection closed")
     
     def __del__(self):
         """Cleanup on object destruction."""
-        self.close()
+        # Close synchronously if object is garbage collected outside asyncio
+        if self._client:
+            self._client.close()
 
 
 # Global database connection instance

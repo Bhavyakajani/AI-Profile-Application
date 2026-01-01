@@ -43,27 +43,27 @@ async def create_user(
 
 
 @router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(
+async def delete_user(
     id: str,
     current_user: Annotated[User, Depends(get_current_user)],
     user_repo: Annotated[UserRepository, Depends(get_user_repository)]
 ):
     # Validate if id is of correct type ObjectId
     util.is_valid_objectId(id)
-    
-    if user_repo.delete(id):
+
+    if await user_repo.delete(id):
         return Response(status_code=204)
     raise HTTPException(status_code=404, detail=f"User {id} not found")
 
 @router.get('/{id}', status_code=status.HTTP_200_OK, response_model=UserCreateResponse)
-def get_user(
+async def get_user(
     id: str,
     user_repo: Annotated[UserRepository, Depends(get_user_repository)]
 ):
     # Validate if id is of correct type ObjectId
     util.is_valid_objectId(id)
     
-    user = user_repo.find_by_id(id)
+    user = await user_repo.find_by_id(id)
     if user is None:
         raise HTTPException(status_code=404, detail=f"User {id} not found")
     
@@ -95,7 +95,7 @@ async def update_user(
     if user.password is not None:
         new_user = util.hash_password(new_user)
 
-    updated_user = user_repo.update_user(id, new_user)
+    updated_user = await user_repo.update_user(id, new_user)
 
     if updated_user:
         return UserUpdateResponse(
