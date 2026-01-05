@@ -44,7 +44,7 @@ class ProdConfig(GlobalConfig):
 
 @lru_cache
 def get_config(env_state: Optional[str] = None) -> GlobalConfig:
-    print(f"Getting config for env_state: {env_state}")
+    print(f"Detecting environment: {env_state}")
     configs = {
         "dev": DevConfig,
         "test": TestConfig,
@@ -54,4 +54,3 @@ def get_config(env_state: Optional[str] = None) -> GlobalConfig:
     return configs[env_state.lower()]()
 
 config = get_config(Settings().ENV_STATE)
-print(f"Loaded configuration for environment: {config.__class__.__name__}")

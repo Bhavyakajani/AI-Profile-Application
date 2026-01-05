@@ -17,11 +17,11 @@ router = APIRouter(
 
 
 @router.post('/login')
-def login(
+async def login(
     request: Annotated[OAuth2PasswordRequestForm, Depends()],
     user_repo: Annotated[UserRepository, Depends(get_user_repository)]
 ):
-    user_dict = user_repo.find_by_email(request.username)
+    user_dict = await user_repo.find_by_email(request.username)
 
     if not user_dict:
         raise HTTPException(status_code=404, detail=f"User with email {request.username} not found")
