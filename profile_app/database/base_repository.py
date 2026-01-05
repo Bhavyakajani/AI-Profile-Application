@@ -6,10 +6,11 @@ from abc import ABC, abstractmethod
 from typing import Generic, TypeVar, Optional, List, Dict, Any
 from bson import ObjectId
 from pymongo.collection import Collection
+import logging
 
 T = TypeVar('T')  # Entity type
 
-
+logger = logging.getLogger(__name__)
 class BaseRepository(ABC, Generic[T]):
     """
     Abstract base repository defining common CRUD operations.
@@ -108,13 +109,15 @@ class BaseRepository(ABC, Generic[T]):
             List of entity documents
         """
         try:
-            query = await self.collection.find().skip(skip)
+            query = self.collection.find().skip(skip)
+            
             if limit:
-                query = query.limit(limit)
-            docs = list(query)
+                query = await query.limit(limit).to_list(length=limit)
+            else:
+                docs = [doc async for doc in query]
             return self._convert_objectid_list(docs)
         except Exception as e:
-            print(f"Error finding all entities: {e}")
+            logger.exception(f"Error finding all entities: {e}")
             return []
     
     async def count(self) -> int:

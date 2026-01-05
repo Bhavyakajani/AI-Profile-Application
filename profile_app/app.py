@@ -1,10 +1,16 @@
+import logging
 from fastapi import FastAPI
 from profile_app.routers import profile, user, auth
 from contextlib import asynccontextmanager
 from profile_app.database.connection import db_connection
+from profile_app.logging_conf import configure_logging
+
+logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    configure_logging() # logging configured before any db actions take place
+    logger.info("Starting the application...")
     await db_connection._connect()
     yield
     await db_connection.close()

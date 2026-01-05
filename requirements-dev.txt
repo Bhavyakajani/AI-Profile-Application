@@ -41,3 +41,5 @@ pydantic[email]
 email-validator
 
 python-dotenv
+
+rich

@@ -8,7 +8,9 @@ from pymongo.database import Database
 from pymongo.collection import Collection
 
 from profile_app.config import config
+import logging
 
+logger = logging.getLogger(__name__)
 class DatabaseConnection:
     """
     Singleton class for managing MongoDB database connections.
@@ -48,17 +50,18 @@ class DatabaseConnection:
         DB_NAME = config.DB_NAME
         HOST = host or config.MONGO_HOST
         PORT = port or config.MONGO_PORT
-        print(f"From connection file, configuring to: {config.__class__.__name__} ")
+
+        logger.info(f"Loading configuration for environment: {config.__class__.__name__}")
         try:
             if DB_URI:
                 self._client = AsyncMongoClient(DB_URI)
             else:
                 self._client = AsyncMongoClient(HOST, PORT)
             self._db = self._client[DB_NAME]
-            print(f"Connected to MongoDB database: {DB_NAME}")
-            print(str(config))
+            logger.debug(f"Configured to: {config.__class__.__name__} ")
+            logger.info(f"Connected to MongoDB database: {DB_NAME}")
         except Exception as e:
-            print(f"Error connecting to MongoDB: {e}")
+            logger.error(f"Error connecting to MongoDB: {e}")
             raise
     
     def get_database(self) -> Database:

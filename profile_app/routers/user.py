@@ -1,5 +1,5 @@
 from typing import Annotated
-
+import logging
 from fastapi import APIRouter, HTTPException, status, Response, Depends
 from profile_app.database.dependencies import get_user_repository
 from profile_app.database.repositories import UserRepository
@@ -12,6 +12,9 @@ router = APIRouter(
     prefix='/user',
     tags=['Users']
 )
+
+logger = logging.getLogger(__name__)
+
 @router.post('/', response_model=UserCreateResponse)
 async def create_user(
     user: User,
@@ -26,6 +29,7 @@ async def create_user(
     
     user_dict = user.model_dump()
     user_dict = util.hash_password(user_dict)
+    logger.debug(f"Creating a new user... \n{user_dict}")
     new_user_id = await user_repo.create(user_dict)
     
     if new_user_id:
@@ -50,7 +54,7 @@ async def delete_user(
 ):
     # Validate if id is of correct type ObjectId
     util.is_valid_objectId(id)
-
+    logger.info(f"Deleting user with id: {id}")
     if await user_repo.delete(id):
         return Response(status_code=204)
     raise HTTPException(status_code=404, detail=f"User {id} not found")
@@ -62,7 +66,7 @@ async def get_user(
 ):
     # Validate if id is of correct type ObjectId
     util.is_valid_objectId(id)
-    
+    logger.info("Fetching a user")
     user = await user_repo.find_by_id(id)
     if user is None:
         raise HTTPException(status_code=404, detail=f"User {id} not found")
@@ -84,7 +88,7 @@ async def update_user(
 ):
     # Validate if id is of correct type ObjectId
     util.is_valid_objectId(id)
-    
+    logger.debug(f"Patch request data: \n{user.model_dump()}")
     new_user = {
         k: v for k, v in user.model_dump(by_alias=True).items() if v is not None
     }
