@@ -5,7 +5,7 @@ from typing import Optional, List, Dict, Any
 from bson import ObjectId
 from pymongo.collection import Collection
 
-from profile_app.database.base_repository import BaseRepository
+from profile_app.database.repositories.base_repository import BaseRepository
 from profile_app.models.request_models import ProfileModel
 
 

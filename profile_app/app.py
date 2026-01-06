@@ -1,5 +1,6 @@
 import logging
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.exception_handlers import http_exception_handler
 from profile_app.routers import profile, user, auth
 from contextlib import asynccontextmanager
 from profile_app.database.connection import db_connection
@@ -22,3 +23,10 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(auth.router)
 app.include_router(profile.router)
 app.include_router(user.router)
+
+@app.exception_handler(HTTPException)
+async def custom_http_exception_handler_logging(request, exc):
+    logger.error(f"HTTP Exception: {exc.status_code} {exc.detail}")
+    return await http_exception_handler(request, exc)
+
+
