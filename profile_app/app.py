@@ -1,8 +1,10 @@
 import logging
 from fastapi import FastAPI, HTTPException
 from fastapi.exception_handlers import http_exception_handler
-from profile_app.routers import profile, user, auth
+from asgi_correlation_id import CorrelationIdMiddleware
 from contextlib import asynccontextmanager
+
+from profile_app.routers import profile, user, auth
 from profile_app.database.connection import db_connection
 from profile_app.logging_conf import configure_logging
 
@@ -19,6 +21,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 """Running on port 8001 by --port 8001"""
+app.add_middleware(CorrelationIdMiddleware)
 
 app.include_router(auth.router)
 app.include_router(profile.router)
