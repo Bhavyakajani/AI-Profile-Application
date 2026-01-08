@@ -46,7 +46,10 @@ async def create_profile(
         new_profile = await profile_repo.find_by_id(pid)
         if new_profile:
             logger.info(f"Profile created with ID: {pid}")
-            return ProfileResponse(**new_profile)
+            # Explicitly map _id to id to ensure proper serialization
+            profile_dict = {k: v for k, v in new_profile.items() if k != "_id"}
+            profile_dict["id"] = str(new_profile.get("_id", pid))
+            return ProfileResponse(**profile_dict)
     
     raise HTTPException(status_code=400, detail="Failed to create profile")
 
@@ -111,7 +114,10 @@ def get_profile_by_id(
     if profile is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         raise HTTPException(status_code=404, detail=f"Profile with id: {id} not found")
-    return ProfileResponse(**profile)
+    # Explicitly map _id to id to ensure proper serialization
+    profile_dict = {k: v for k, v in profile.items() if k != "_id"}
+    profile_dict["id"] = str(profile.get("_id", id))
+    return ProfileResponse(**profile_dict)
 
 
 @router.post("/parse", response_model=ProfileResponse)

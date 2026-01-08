@@ -48,7 +48,7 @@ class CreatorResponse(BaseResponseModel):
 #--------------Profile-----------------
 class ProfileResponse(BaseResponseModel):
     """POST and GET Profile Response"""
-    id: str =  Field(alias='_id', default=None)
+    id: str = Field(alias='_id', serialization_alias='id', default=None)
     name: Optional[str] = None
     contact_number: Optional[str] = None
     email: Optional[str] = None
