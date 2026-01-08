@@ -29,6 +29,7 @@ class GlobalConfig(Settings):
     DB_NAME: str = None
     MONGO_HOST: str = "localhost"
     MONGO_PORT: int = 27017
+    SECRET_KEY: Optional[str] = None
 
 class DevConfig(GlobalConfig):
     model_config = SettingsConfigDict(env_prefix="DEV_")
@@ -37,6 +38,7 @@ class TestConfig(GlobalConfig):
     DB_FORCE_ROLLBACK: bool = True
     MONGODB_URI: str ="mongodb://localhost:27017/"
     DB_NAME: str ="ProfileDB_TEST"
+    SECRET_KEY: str = "test-secret-key-for-jwt-token-generation-in-tests"
     model_config = SettingsConfigDict(env_prefix="TEST_")
 
 class ProdConfig(GlobalConfig):
