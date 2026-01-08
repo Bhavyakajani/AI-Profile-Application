@@ -45,7 +45,20 @@ class DatabaseConnection:
         """
         Establish async connection to MongoDB. Must be called from within an
         active asyncio event loop (e.g. at app startup or inside tests).
+        
+        If a connection already exists, it will be closed first to avoid
+        event loop conflicts (e.g., when switching between test and app event loops).
         """
+        # Close any existing connection first to avoid event loop conflicts
+        if self._client is not None:
+            try:
+                await self.close()
+            except Exception as e:
+                # If closing fails (e.g., different event loop), force reset
+                logger.warning(f"Could not close existing connection: {e}. Forcing reset.")
+                self._client = None
+                self._db = None
+        
         DB_URI = config.MONGODB_URI
         DB_NAME = config.DB_NAME
         HOST = host or config.MONGO_HOST
@@ -91,13 +104,19 @@ class DatabaseConnection:
     async def close(self):
         """Close the MongoDB connection."""
         if self._client:
-            # AsyncMongoClient.close() is a regular method; calling it from the
-            # same loop is fine. We implement close as async so callers can
-            # await it consistently from async contexts.
-            await self._client.close()
-            self._client = None
-            self._db = None
-            print("Database connection closed")
+            try:
+                # AsyncMongoClient.close() is a regular method; calling it from the
+                # same loop is fine. We implement close as async so callers can
+                # await it consistently from async contexts.
+                await self._client.close()
+            except Exception as e:
+                # If closing fails (e.g., different event loop), log and continue
+                logger.warning(f"Error closing connection: {e}")
+            finally:
+                # Always reset the client and db references
+                self._client = None
+                self._db = None
+                print("Database connection closed")
     
     def __del__(self):
         """Cleanup on object destruction."""
