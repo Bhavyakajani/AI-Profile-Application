@@ -7,7 +7,7 @@ from profile_app.database.repositories import ProfileRepository
 from profile_app.models.request_models import TokenData, ProfileModel, User
 from profile_app.models.response_models import ProfileResponse, ProfilesListResponse
 import profile_app.utils.app_util as util
-from profile_app.authentication.oauth2 import get_current_user
+from profile_app.authentication.security import get_current_user
 import profile_app.document_processing as dp
 import logging
 router = APIRouter(
@@ -34,8 +34,6 @@ async def create_profile(
     current_user: Annotated[User, Depends(get_current_user)],
     profile_repo: Annotated[ProfileRepository, Depends(get_profile_repository)]
 ):
-    if profile is None:
-        raise HTTPException(status_code=402, detail='Bad Request: Invalid Profile Details')
     
     if await profile_repo.exists_by_name(profile.name or ""):
         raise HTTPException(status_code=409, detail=f"Profile with name {profile.name} already exists")

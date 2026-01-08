@@ -8,7 +8,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from profile_app.models.request_models import Token
 from profile_app.database.dependencies import get_user_repository
 from profile_app.database.repositories import UserRepository
-from profile_app.authentication.jwt_token import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
+from profile_app.authentication.security import create_access_token
 from ..utils import app_util as util
 
 router = APIRouter(

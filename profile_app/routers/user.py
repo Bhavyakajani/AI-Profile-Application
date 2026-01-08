@@ -6,7 +6,7 @@ from profile_app.database.repositories import UserRepository
 from profile_app.models.response_models import UserCreateResponse, UserUpdateResponse, UserGetResponse
 from profile_app.models.request_models import  User, UserUpdateRequest
 import profile_app.utils.app_util as util
-from profile_app.authentication.oauth2 import get_current_user
+from profile_app.authentication.security import get_current_user
 
 router = APIRouter(
     prefix='/user',

@@ -3,6 +3,7 @@ import pytest
 from httpx import AsyncClient
 
 from profile_app.models.request_models import User
+import profile_app.authentication.security as security
 
 async def create_user(body: User | dict, async_client: AsyncClient):
     """Helper to create a user via the API and return the raw response."""
@@ -48,11 +49,6 @@ async def test_create_user_no_body(created_user_no_body):
     resp = created_user_no_body
     assert resp.status_code == 422
 
-# @pytest.mark.anyio
-# async def test_delete_user(deleted_user):
-#     resp = deleted_user
-#     assert resp.status_code == 204
-
 @pytest.mark.anyio
 async def test_login_user_not_exists(async_client: AsyncClient):
     user_credentials = {
@@ -77,3 +73,26 @@ async def test_login_user(async_client: AsyncClient, created_user):
     }
     response = await async_client.post("/login", data=user_credentials)
     assert response.status_code == 200
+
+
+@pytest.mark.anyio
+async def test_login_wrong_password(async_client: AsyncClient, created_user):
+        user_dict = created_user.json()
+        user_credentials = {
+            "username": user_dict["email"],
+            "password": "wrongpassword"
+        }
+        response = await async_client.post("/login", data=user_credentials)
+        assert response.status_code == 401
+
+@pytest.mark.anyio
+async def test_get_current_user(created_user):
+    user_dict= created_user.json()
+    token = security.create_access_token(data={"sub": user_dict["email"]})
+    user = security.get_current_user(token)
+    assert user.email == user_dict["email"]
+
+@pytest.mark.anyio
+async def test_get_current_user_invalid_token():
+    with pytest.raises(security.HTTPException):
+        await security.get_current_user("Some invalid token")
