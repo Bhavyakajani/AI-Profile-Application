@@ -63,7 +63,8 @@ class User(BaseModel):
     name: str
     email: EmailStr
     password: str
-    role: str
+    role: Optional[str] = None
+    status: Optional[str] = Field(default="waiting")  # "waiting", "active", "disabled"
     profiles: Optional[List[ProfileModel]] = []
 
 class ProfileUpdateRequest(BaseModel):

@@ -98,8 +98,8 @@ class ProfileRepository(BaseRepository[ProfileModel]):
         try:
             # Use a proper regex filter with case-insensitive option
             regex_filter = {"$regex": name, "$options": "i"}
-            cursor = await self.collection.find({"name": regex_filter}).limit(limit)
-            docs = list(cursor)
+            cursor = self.collection.find({"name": regex_filter}).limit(limit)
+            docs = await cursor.to_list(length=limit)
             print(f"Found {len(docs)} profiles matching name: {name}")
             return self._convert_objectid_list(docs)
         except Exception as e:

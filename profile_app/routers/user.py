@@ -1,9 +1,14 @@
-from typing import Annotated
+from typing import Annotated, List
 import logging
 from fastapi import APIRouter, HTTPException, status, Response, Depends
 from profile_app.database.dependencies import get_user_repository
 from profile_app.database.repositories import UserRepository
-from profile_app.models.response_models import UserCreateResponse, UserUpdateResponse, UserGetResponse
+from profile_app.models.response_models import (
+    UserCreateResponse,
+    UserRoleResponse,
+    UserUpdateResponse,
+    UserGetResponse,
+)
 from profile_app.models.request_models import  User, UserUpdateRequest
 import profile_app.utils.app_util as util
 from profile_app.authentication.security import get_current_user
@@ -20,6 +25,7 @@ async def create_user(
     user: User,
     user_repo: Annotated[UserRepository, Depends(get_user_repository)]
 ):
+    logger.debug(f"Received user creation request: \n{user.model_dump()}")
     if not user:
         raise HTTPException(status_code=402, detail='Bad Request: Invalid User Details')
     
@@ -40,11 +46,29 @@ async def create_user(
                 name=new_user["name"],
                 email=new_user["email"],
                 role=new_user["role"],
+                status=new_user["status"],
                 profiles=new_user.get("profiles", [])
             )
     
     raise HTTPException(status_code=400, detail="Failed to create user")
 
+@router.get('/approval-list', status_code=status.HTTP_200_OK, response_model=List[UserRoleResponse])
+async def get_users_awaiting_approval(
+    current_user: Annotated[User, Depends(get_current_user)],
+    user_repo: Annotated[UserRepository, Depends(get_user_repository)]
+):
+    logger.info("Getting list of Users awaiting approval")
+
+    users = await user_repo.find_by_status()
+    user_list = [
+        UserRoleResponse(
+        id=str(user["_id"]), 
+        name=user["name"],
+        email=user["email"],
+        status=user["status"]
+        ) for user in users
+        ]
+    return user_list
 
 @router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(

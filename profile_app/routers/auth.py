@@ -1,4 +1,3 @@
-from datetime import timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Depends
@@ -14,7 +13,6 @@ from ..utils import app_util as util
 router = APIRouter(
     tags=['Authentication']
 )
-
 
 @router.post('/login')
 async def login(

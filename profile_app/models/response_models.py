@@ -1,9 +1,10 @@
 from datetime import datetime
-from pydantic import EmailStr, Field
+from pydantic import EmailStr, Field, BaseModel
 from bson import ObjectId
 
 from .request_models import ProfileModel
-from .sub_models import *
+from .sub_models import Education, WorkExperience
+from typing import List, Optional
 
 class BaseResponseModel(BaseModel):
     class Config:
@@ -27,8 +28,15 @@ class UserCreateResponse(BaseResponseModel):
     id: str
     name: str
     email: EmailStr
-    role: str
+    role: Optional[str] = None
+    status: str
     profiles: Optional[List[ProfileModel]] = []
+
+class UserRoleResponse(BaseResponseModel):
+    id: str
+    name: str
+    email: EmailStr
+    status: str
 
 class UserGetResponse(BaseResponseModel):
     id: str

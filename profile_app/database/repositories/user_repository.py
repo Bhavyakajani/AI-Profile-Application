@@ -123,11 +123,29 @@ class UserRepository(BaseRepository[User]):
         try:
             query = self.collection.find({"role": role})
             if limit:
-                query = query.limit(limit)
                 query = await query.to_list(length=limit)
-            docs = list(query)
-            return self._convert_objectid_list(docs)
+            else:
+                query = await query.to_list(length=None)
+            return self._convert_objectid_list(query)
         except Exception as e:
             print(f"Error finding users by role: {e}")
+            return []
+        
+    async def find_by_status(self, status: str = "waiting", limit: Optional[int]= None) -> List[Dict[str, Any]]:
+        """
+        Find users awaiting approval from Admin
+        :param status: str = For Fetching Users with waiting status
+        :param limit: Optional[int]: Limit the results in a single call 
+        :return: List[Dict[str, Any]]: List of Users
+        """
+        try: 
+            query = self.collection.find({"status": status})
+            if limit:
+                docs = await query.to_list(length=limit)
+            else:
+                docs = await query.to_list(length=None)
+            return self._convert_objectid_list(docs)
+        except Exception as e:
+            print(f"Error finding users by status: {status}: {e}")
             return []
 
