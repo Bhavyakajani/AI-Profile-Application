@@ -1,4 +1,4 @@
-from typing import Annotated, List
+from typing import Annotated, List, Literal
 import logging
 from fastapi import APIRouter, HTTPException, status, Response, Depends
 from profile_app.database.dependencies import get_user_repository
@@ -52,7 +52,7 @@ async def create_user(
     
     raise HTTPException(status_code=400, detail="Failed to create user")
 
-@router.get('/approval-list', status_code=status.HTTP_200_OK, response_model=List[UserRoleResponse])
+@router.get('/role-approval-list', status_code=status.HTTP_200_OK, response_model=List[UserRoleResponse])
 async def get_users_awaiting_approval(
     current_user: Annotated[User, Depends(get_current_user)],
     user_repo: Annotated[UserRepository, Depends(get_user_repository)]
@@ -69,6 +69,43 @@ async def get_users_awaiting_approval(
         ) for user in users
         ]
     return user_list
+
+@router.patch('/{id}/role', status_code=status.HTTP_200_OK, response_model=UserRoleResponse)
+async def update_user_role(
+    id: str,
+    role: Literal["admin", "client", "candidate"],
+    current_user: Annotated[User, Depends(get_current_user)],
+    user_repo: Annotated[UserRepository, Depends(get_user_repository)]
+):
+    logger.info(f"Updating User role to: {role}")
+    
+    util.is_valid_objectId(id)
+    
+    logged_in_user = await user_repo.find_by_email(current_user.email)
+    
+    if logged_in_user["role"]!="admin":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
+                            detail="You are not authorized. Please contact admin: admin@gmail.com")
+    
+    if logged_in_user["status"]!="waiting":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
+                            detail="A role has already been assigned to the User")
+
+    update_dict = {
+        "role": role, 
+        "status": "approved"
+    }
+    user = await user_repo.update_user(id, user_data=update_dict)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, 
+                            detail="Unable to update User role")
+    return UserRoleResponse(
+        id=str(user["_id"]), 
+        name=user["name"],
+        email=user["email"],
+        status=user["status"])
+
+
 
 @router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
