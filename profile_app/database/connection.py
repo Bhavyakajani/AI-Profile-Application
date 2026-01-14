@@ -3,18 +3,31 @@ Database connection manager using Singleton pattern.
 Handles MongoDB connection lifecycle and provides access to database and collections.
 """
 from typing import Optional
-from pymongo import MongoClient
+from pymongo import AsyncMongoClient
 from pymongo.database import Database
 from pymongo.collection import Collection
 
+from profile_app.config import config
+import logging
 
+logger = logging.getLogger(__name__)
 class DatabaseConnection:
     """
     Singleton class for managing MongoDB database connections.
     Ensures only one connection instance exists throughout the application.
+
+    Behavior:
+    - Reads connection info from environment variables so you can separate
+      prod and test DBs easily:
+        * MONGO_URI (optional): full MongoDB URI
+        * MONGO_HOST (default: localhost)
+        * MONGO_PORT (default: 27017)
+        * MONGO_DB_NAME (default: ProfileDB)
+        * MONGO_TEST_DB_NAME (default: ProfileDB_test)
+        * TESTING (set to "1" to use test DB)
     """
     _instance: Optional['DatabaseConnection'] = None
-    _client: Optional[MongoClient] = None
+    _client: Optional[AsyncMongoClient] = None
     _db: Optional[Database] = None
     
     def __new__(cls):
@@ -23,24 +36,45 @@ class DatabaseConnection:
         return cls._instance
     
     def __init__(self):
-        if self._client is None:
-            self._connect()
+        # Do not create the async client at import time; it must be created
+        # inside the running asyncio event loop. Call `await db_connection._connect()`
+        # from application startup or test setup instead.
+        return
     
-    def _connect(self, host: str = 'localhost', port: int = 27017, db_name: str = 'ProfileDB'):
+    async def _connect(self, host: Optional[str] = None, port: Optional[int] = None, db_name: Optional[str] = None):
         """
-        Establish connection to MongoDB.
+        Establish async connection to MongoDB. Must be called from within an
+        active asyncio event loop (e.g. at app startup or inside tests).
         
-        Args:
-            host: MongoDB host address
-            port: MongoDB port number
-            db_name: Database name
+        If a connection already exists, it will be closed first to avoid
+        event loop conflicts (e.g., when switching between test and app event loops).
         """
+        # Close any existing connection first to avoid event loop conflicts
+        if self._client is not None:
+            try:
+                await self.close()
+            except Exception as e:
+                # If closing fails (e.g., different event loop), force reset
+                logger.warning(f"Could not close existing connection: {e}. Forcing reset.")
+                self._client = None
+                self._db = None
+        
+        DB_URI = config.MONGODB_URI
+        DB_NAME = config.DB_NAME
+        HOST = host or config.MONGO_HOST
+        PORT = port or config.MONGO_PORT
+
+        logger.info(f"Loading configuration for environment: {config.__class__.__name__}")
         try:
-            self._client = MongoClient(host, port)
-            self._db = self._client[db_name]
-            print(f"Connected to MongoDB database: {db_name}")
+            if DB_URI:
+                self._client = AsyncMongoClient(DB_URI)
+            else:
+                self._client = AsyncMongoClient(HOST, PORT)
+            self._db = self._client[DB_NAME]
+            logger.debug(f"Configured to: {config.__class__.__name__} ")
+            logger.info(f"Connected to MongoDB database: {DB_NAME}")
         except Exception as e:
-            print(f"Error connecting to MongoDB: {e}")
+            logger.error(f"Error connecting to MongoDB: {e}")
             raise
     
     def get_database(self) -> Database:
@@ -67,17 +101,28 @@ class DatabaseConnection:
         db = self.get_database()
         return db[collection_name]
     
-    def close(self):
+    async def close(self):
         """Close the MongoDB connection."""
         if self._client:
-            self._client.close()
-            self._client = None
-            self._db = None
-            print("Database connection closed")
+            try:
+                # AsyncMongoClient.close() is a regular method; calling it from the
+                # same loop is fine. We implement close as async so callers can
+                # await it consistently from async contexts.
+                await self._client.close()
+            except Exception as e:
+                # If closing fails (e.g., different event loop), log and continue
+                logger.warning(f"Error closing connection: {e}")
+            finally:
+                # Always reset the client and db references
+                self._client = None
+                self._db = None
+                print("Database connection closed")
     
     def __del__(self):
         """Cleanup on object destruction."""
-        self.close()
+        # Close synchronously if object is garbage collected outside asyncio
+        if self._client:
+            self._client.close()
 
 
 # Global database connection instance
