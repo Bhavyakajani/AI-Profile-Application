@@ -8,14 +8,14 @@ import profile_app.authentication.security as security
 async def create_user(body: User | dict, async_client: AsyncClient):
     """Helper to create a user via the API and return the raw response."""
     body_data = body.model_dump() if hasattr(body, "model_dump") else body
-    response = await async_client.post("/user/", json=body_data)
+    response = await async_client.post("/user/register", json=body_data)
     return response
 
 
 @pytest.fixture()
 async def created_user(async_client: AsyncClient):
     """Create a user and return the HTTP response along with the original password."""
-    user = User(name="test", email="test@example.com", password="testpassword", role="user")
+    user = User(name="test", email="test@example.com", password="testpassword")
     response = await create_user(body=user, async_client=async_client)
     # Store the original password in the response object for use in tests
     response._original_password = user.password
@@ -41,7 +41,7 @@ async def test_create_user(created_user):
     assert "id" in data
     assert data["name"] == "test"
     assert data["email"] == "test@example.com"
-    assert data["role"] == "user"
+    assert data["role"] is None
     assert isinstance(data["id"], str)
 
 @pytest.mark.anyio
@@ -96,3 +96,17 @@ async def test_get_current_user(created_user):
 async def test_get_current_user_invalid_token():
     with pytest.raises(security.HTTPException):
         await security.get_current_user("Some invalid token")
+
+@pytest.mark.anyio
+async def test_delete_user_unauthorized(
+    async_client: AsyncClient, 
+    registered_candidate_user_token: str, 
+    registered_candidate_user: dict
+):
+    user_id = registered_candidate_user["_id"]
+    response = await async_client.delete(
+        f"/user/{user_id}",
+        headers={"Authorization": f"Bearer {registered_candidate_user_token}"}
+    )
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Unauthorized access"

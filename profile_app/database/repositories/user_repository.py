@@ -148,4 +148,16 @@ class UserRepository(BaseRepository[User]):
         except Exception as e:
             print(f"Error finding users by status: {status}: {e}")
             return []
-
+    
+    async def get_user_role_by_email(self, email: str) -> Optional[str]:
+        match = {"$match": {"email": email}}
+        project = {"$project": {"role": 1, "_id": 0}}
+        try:
+             
+            pipeline= [match, project]
+            result = await self.collection.aggregate(pipeline=pipeline)
+            
+            return result["role"]
+        except Exception as e:
+            print(f"Error getting user role: {e}")
+            return None

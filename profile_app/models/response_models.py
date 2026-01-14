@@ -36,6 +36,7 @@ class UserRoleResponse(BaseResponseModel):
     id: str
     name: str
     email: EmailStr
+    role: Optional[str]
     status: str
 
 class UserGetResponse(BaseResponseModel):

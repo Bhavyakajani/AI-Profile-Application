@@ -2,10 +2,11 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, status, Response, Depends, UploadFile
 
-from profile_app.database.dependencies import get_profile_repository
-from profile_app.database.repositories import ProfileRepository
+from profile_app.database.dependencies import get_profile_repository, get_user_repository
+from profile_app.database.repositories import ProfileRepository, UserRepository
 from profile_app.models.request_models import TokenData, ProfileModel, User
 from profile_app.models.response_models import ProfileResponse, ProfilesListResponse
+from profile_app.services import user_service
 import profile_app.utils.app_util as util
 from profile_app.authentication.security import get_current_user
 import profile_app.document_processing as dp
@@ -32,8 +33,13 @@ async def get_all_profiles(
 async def create_profile(
     profile: ProfileModel,
     current_user: Annotated[User, Depends(get_current_user)],
-    profile_repo: Annotated[ProfileRepository, Depends(get_profile_repository)]
+    profile_repo: Annotated[ProfileRepository, Depends(get_profile_repository)], 
+    user_repo: Annotated[UserRepository, Depends(get_user_repository)]
 ):
+    logged_in_user = await user_repo.find_by_email(current_user.email)
+
+    if user_service.is_user_client(logged_in_user):
+        raise HTTPException(status_code=401, detail="Unauthorized access")
     
     if await profile_repo.exists_by_name(profile.name or ""):
         raise HTTPException(status_code=409, detail=f"Profile with name {profile.name} already exists")
@@ -73,9 +79,14 @@ async def get_profile_by_name(
 async def delete_profile_by_id(
     id: str,
     current_user: Annotated[User, Depends(get_current_user)],
-    profile_repo: Annotated[ProfileRepository, Depends(get_profile_repository)]
+    profile_repo: Annotated[ProfileRepository, Depends(get_profile_repository)],
+    user_repo: Annotated[UserRepository, Depends(get_user_repository)]
 ):
-    # Validate if id is of correct type ObjectId
+    logged_in_user = await user_repo.find_by_email(current_user.email)
+    
+    if not user_service.is_user_admin(logged_in_user):
+        raise HTTPException(status_code=401, detail="Unauthorized access")
+
     util.is_valid_objectId(id)
     logger.info(f"Deleting profile with id: {id}")
     if await profile_repo.delete(id):
@@ -87,10 +98,20 @@ async def update_profile(
     id: str,
     profile: ProfileModel,
     current_user: Annotated[User, Depends(get_current_user)],
-    profile_repo: Annotated[ProfileRepository, Depends(get_profile_repository)]
+    profile_repo: Annotated[ProfileRepository, Depends(get_profile_repository)],
+    user_repo: Annotated[UserRepository, Depends(get_user_repository)]
 ):
     # Validate if id is of correct type ObjectId
     util.is_valid_objectId(id)
+
+    logged_in_user = await user_repo.find_by_email(current_user.email)
+    profile  =await profile_repo.find_by_id(id)
+
+    is_admin = user_service.is_user_admin(logged_in_user)
+    is_owner = profile["email"] == current_user.email
+    if not (is_admin or is_owner):
+        raise HTTPException(status_code=401, detail="Unauthorized access")
+
     logger.info(f"Updating profile with id: {id}")
     update_result = await profile_repo.update_profile(id, profile)
 
@@ -100,16 +121,16 @@ async def update_profile(
         raise HTTPException(status_code=404, detail=f"Profile {id} not found")
 
 @router.get('/{id}', status_code=200, response_model=ProfileResponse)
-def get_profile_by_id(
+async def get_profile_by_id(
     id: str,
     response: Response,
     current_user: Annotated[User, Depends(get_current_user)],
     profile_repo: Annotated[ProfileRepository, Depends(get_profile_repository)]
 ):
-    # Validate if id is of correct type ObjectId
+    
     util.is_valid_objectId(id)
     logger.info("Fetching a specific profile")
-    profile = profile_repo.find_by_id(id)
+    profile = await profile_repo.find_by_id(id)
     # Validation
     if profile is None:
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -124,8 +145,15 @@ def get_profile_by_id(
 async def parse_profile(
     file: UploadFile,
     current_user: Annotated[TokenData, Depends(get_current_user)],
-    profile_repo: Annotated[ProfileRepository, Depends(get_profile_repository)]
+    profile_repo: Annotated[ProfileRepository, Depends(get_profile_repository)],
+    user_repo: Annotated[UserRepository, Depends(get_user_repository)]
 ):
+    
+    logged_in_user = await user_repo.find_by_email(current_user.email)
+
+    if user_service.is_user_client(logged_in_user):
+        raise HTTPException(status_code=401, detail="Unauthorized access")
+    
     file_extension = file.filename.split(".")[-1].lower()
     if file_extension not in ["pdf", "pptx", "jpg", "jpeg", "png"]:
         raise HTTPException(status_code=400, detail="File format not supported")

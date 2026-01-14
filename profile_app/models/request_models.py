@@ -21,7 +21,6 @@ class UserCreateRequest(BaseModel):
     name: str
     email: EmailStr
     password: str
-    role: str  # "admin" or "member"
 
 class UserUpdateRequest(BaseModel):
     name: Optional[str] = None

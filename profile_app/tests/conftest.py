@@ -67,8 +67,8 @@ async def async_client(client, db) -> AsyncGenerator:
 
 @pytest.fixture()
 async def registered_user(async_client: AsyncClient) -> dict:
-    user = User(name="Test User", email="testuser@gmail.com", password="testpassword", role="Admin")
-    await async_client.post("/user/", json=user.model_dump())
+    user = User(name="Test User", email="testuser@gmail.com", password="testpassword")
+    await async_client.post("/user/register", json=user.model_dump())
     user_repository = get_user_repository()
     user = await user_repository.find_by_email(user.email)
     return user
@@ -78,5 +78,21 @@ async def registered_user_token(async_client: AsyncClient, registered_user: dict
     response = await async_client.post("/login", data = {
         "username": registered_user["email"],
         "password": "testpassword"
+    })
+    return response.json()["access_token"]
+
+@pytest.fixture()
+async def registered_candidate_user(async_client: AsyncClient) -> dict:
+    user = User(name="Candidate User", email="Candidate@gmail.com", password="testcandidatepassword", role="candidate")
+    await async_client.post("/user/register", json=user.model_dump())
+    user_repository = get_user_repository()
+    user = await user_repository.find_by_email(user.email)
+    return user
+
+@pytest.fixture()
+async def registered_candidate_user_token(async_client: AsyncClient, registered_candidate_user: dict) -> str:
+    response = await async_client.post("/login", data = {
+        "username": registered_candidate_user["email"],
+        "password": "testcandidatepassword"
     })
     return response.json()["access_token"]

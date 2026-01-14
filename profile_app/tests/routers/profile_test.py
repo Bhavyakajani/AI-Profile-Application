@@ -1,11 +1,9 @@
-import json
 import pytest
 
 from httpx import AsyncClient
 
 from profile_app.models.request_models import ProfileModel
 from profile_app.models.sub_models import Education, WorkExperience
-from profile_app.tests.conftest import async_client, registered_user, registered_user_token
 
 test_profile = ProfileModel(
     name="Test Profile",

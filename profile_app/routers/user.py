@@ -9,20 +9,25 @@ from profile_app.models.response_models import (
     UserUpdateResponse,
     UserGetResponse,
 )
-from profile_app.models.request_models import  User, UserUpdateRequest
+from profile_app.models.request_models import  (
+    User, 
+    UserCreateRequest, 
+    UserUpdateRequest
+)
 import profile_app.utils.app_util as util
 from profile_app.authentication.security import get_current_user
+from profile_app.services.user_service import UserService
 
 router = APIRouter(
     prefix='/user',
     tags=['Users']
 )
-
+user_service = UserService()
 logger = logging.getLogger(__name__)
 
-@router.post('/', response_model=UserCreateResponse)
+@router.post('/register', response_model=UserCreateResponse)
 async def create_user(
-    user: User,
+    user: UserCreateRequest,
     user_repo: Annotated[UserRepository, Depends(get_user_repository)]
 ):
     logger.debug(f"Received user creation request: \n{user.model_dump()}")
@@ -33,6 +38,7 @@ async def create_user(
     if await user_repo.exists_by_email(user.email):
         raise HTTPException(status_code=409, detail=f"User with email {user.email} already exists")
     
+    user = User(**user.model_dump())
     user_dict = user.model_dump()
     user_dict = util.hash_password(user_dict)
     logger.debug(f"Creating a new user... \n{user_dict}")
@@ -58,6 +64,10 @@ async def get_users_awaiting_approval(
     user_repo: Annotated[UserRepository, Depends(get_user_repository)]
 ):
     logger.info("Getting list of Users awaiting approval")
+    logged_in_user = await user_repo.find_by_email(current_user.email)
+
+    if not user_service.is_user_admin(logged_in_user):
+        raise HTTPException(status_code=401, detail="Unauthorized access")
 
     users = await user_repo.find_by_status()
     user_list = [
@@ -65,6 +75,7 @@ async def get_users_awaiting_approval(
         id=str(user["_id"]), 
         name=user["name"],
         email=user["email"],
+        role=user["role"],
         status=user["status"]
         ) for user in users
         ]
@@ -83,11 +94,12 @@ async def update_user_role(
     
     logged_in_user = await user_repo.find_by_email(current_user.email)
     
-    if logged_in_user["role"]!="admin":
+    if not user_service.is_user_admin(logged_in_user):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
                             detail="You are not authorized. Please contact admin: admin@gmail.com")
     
-    if logged_in_user["status"]!="waiting":
+    user = await user_repo.find_by_id(id)
+    if user and not user_service.is_status_waiting(user):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
                             detail="A role has already been assigned to the User")
 
@@ -103,6 +115,7 @@ async def update_user_role(
         id=str(user["_id"]), 
         name=user["name"],
         email=user["email"],
+        role=user["role"],
         status=user["status"])
 
 
@@ -116,6 +129,14 @@ async def delete_user(
     # Validate if id is of correct type ObjectId
     util.is_valid_objectId(id)
     logger.info(f"Deleting user with id: {id}")
+
+    logged_in_user = await user_repo.find_by_email(current_user.email)
+    
+    if not user_service.is_user_admin(logged_in_user):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
+                            detail="Unauthorized access")  
+
+
     if await user_repo.delete(id):
         return Response(status_code=204)
     raise HTTPException(status_code=404, detail=f"User {id} not found")
