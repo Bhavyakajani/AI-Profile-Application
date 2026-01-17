@@ -160,7 +160,7 @@ async def parse_profile(
     logger.info("Saving uploaded file for parsing")
     file_path, stored_name, file_id = dp.save_upload_file_tmp(file)
     logger.info("Parsing Profile")
-    profile_model = util.parse_resume(file_path, current_user, profile_repo)
+    profile_model = await util.parse_resume(file_path, current_user, profile_repo)
     if not profile_model:
         raise HTTPException(status_code=400, detail="Profile exists or an error might have occurred")
     return profile_model

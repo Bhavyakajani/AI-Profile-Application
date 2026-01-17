@@ -40,7 +40,7 @@ def verify_password(hashed_pwd, pwd) -> bool:
     """
     return pwd_context.verify(pwd, hashed_pwd)
 
-def parse_resume(
+async def parse_resume(
     file_path: str,
     current_user,
     profile_repo: ProfileRepository
@@ -58,16 +58,16 @@ def parse_resume(
     """
     profile_json = llm.extract_with_llm(file_path)
 
-    if profile_repo.exists_by_name(profile_json.get('name', '')):
+    if await profile_repo.exists_by_name(profile_json.get('name', '')):
         print(f"{profile_json.get('name')} already exists")
         return None
 
     profile_model = ProfileModel(**profile_json)
     profile_model.creator = current_user.email
-    pid = profile_repo.create(profile_model)
+    pid = await profile_repo.create(profile_model)
     
     if pid:
-        profile_data = profile_repo.find_by_id(pid)
+        profile_data = await profile_repo.find_by_id(pid)
         if profile_data:
             return ProfileResponse(**profile_data)
     
