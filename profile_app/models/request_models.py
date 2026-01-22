@@ -64,7 +64,7 @@ class ProfileUpdateModel(BaseModel):
     skills: Optional[List[str]] = None
     educations: Optional[List[Education]] = None
     work_experiences: Optional[List[WorkExperience]] = None
-    YoE: Optional[int] = None
+    YoE: Optional[float] = None
 
 class User(BaseModel):
     name: str

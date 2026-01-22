@@ -172,7 +172,7 @@ const EditProfile = () => {
             (edu) =>
               edu.institution || edu.degree || edu.start_date || edu.end_date
           )
-          .map(() => ({
+          .map((edu) => ({
             institution: edu.institution || undefined,
             degree: edu.degree || undefined,
             start_date: edu.start_date || undefined,
