@@ -117,7 +117,7 @@ class ProfileRepository(BaseRepository[ProfileModel]):
         Returns:
             Updated profile document or None if not found
         """
-        profile_dict = profile.model_dump()
+        profile_dict = profile.model_dump(exclude_unset=True)
         return await self.update(id, profile_dict)
 
     async def find_by_creator_email(self, creator_email: str, limit: Optional[int] = None) -> List[Dict[str, Any]]:

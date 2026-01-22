@@ -12,7 +12,8 @@ from profile_app.models.response_models import (
 from profile_app.models.request_models import  (
     User, 
     UserCreateRequest, 
-    UserUpdateRequest
+    UserUpdateRequest,
+    TokenData
 )
 import profile_app.utils.app_util as util
 from profile_app.authentication.security import get_current_user
@@ -141,6 +142,26 @@ async def delete_user(
         return Response(status_code=204)
     raise HTTPException(status_code=404, detail=f"User {id} not found")
 
+@router.get('/me', status_code=status.HTTP_200_OK, response_model=UserCreateResponse)
+async def get_current_user_info(
+    current_user: Annotated[TokenData, Depends(get_current_user)],
+    user_repo: Annotated[UserRepository, Depends(get_user_repository)]
+):
+    """Get current authenticated user's information"""
+    logger.info("Fetching current user info")
+    user = await user_repo.find_by_email(current_user.email)
+    if user is None:
+        raise HTTPException(status_code=404, detail=f"User with email {current_user.email} not found")
+    
+    return UserCreateResponse(
+        id=str(user["_id"]),
+        name=user["name"],
+        email=user["email"],
+        role=user.get("role"),
+        status=user.get("status"),
+        profiles=user.get("profiles", [])
+    )
+
 @router.get('/{id}', status_code=status.HTTP_200_OK, response_model=UserCreateResponse)
 async def get_user(
     id: str,
@@ -158,6 +179,7 @@ async def get_user(
         name=user["name"],
         email=user["email"],
         role=user["role"],
+        status=user.get("status"),
         profiles=user.get("profiles", [])
     )
 
