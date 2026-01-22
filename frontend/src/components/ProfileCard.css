@@ -1,0 +1,104 @@
+.profile-card {
+  display: block;
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.profile-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.profile-card-header {
+  margin-bottom: 1rem;
+}
+
+.profile-card-name {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.profile-card-email {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.profile-card-skills {
+  margin-bottom: 1rem;
+}
+
+.profile-card-skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.profile-card-skill {
+  background: #f0f0f0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.profile-card-skill-more {
+  background: #e3f2fd;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: #1976d2;
+}
+
+.profile-card-yoe {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.profile-card-footer {
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.profile-card-link {
+  color: #667eea;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .profile-card {
+    background: #1a1a1a;
+    border-color: #404040;
+  }
+
+  .profile-card-name {
+    color: rgba(255, 255, 255, 0.87);
+  }
+
+  .profile-card-email {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .profile-card-skill {
+    background: #2a2a2a;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .profile-card-yoe {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .profile-card-footer {
+    border-color: #404040;
+  }
+}

@@ -1,0 +1,234 @@
+.profile-detail-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.profile-detail-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.back-link:hover {
+  color: #764ba2;
+}
+
+.profile-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-detail-header h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+  color: #333;
+}
+
+.profile-email {
+  margin: 0.25rem 0;
+  color: #666;
+}
+
+.profile-contact {
+  margin: 0.25rem 0;
+  color: #666;
+}
+
+.profile-yoe {
+  margin: 0.25rem 0;
+  color: #666;
+  font-weight: 500;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.profile-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-section h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  color: #333;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.skill-tag {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.education-list,
+.experience-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.education-item,
+.experience-item {
+  padding: 1rem;
+  background: lightgoldenrodyellow;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
+.education-item h3,
+.experience-item h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.institution,
+.company {
+  margin: 0.25rem 0;
+  font-weight: 500;
+  color: lightgoldenrodyellow;
+}
+
+.dates {
+  margin: 0.25rem 0;
+  color: lightgray;
+  font-size: 0.9rem;
+}
+
+.location {
+  margin: 0.25rem 0;
+  color: lightpink;
+  font-size: 0.9rem;
+}
+
+.cgpa {
+  margin: 0.25rem 0;
+  color: lightgoldenrodyellow;
+  font-size: 0.9rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #5568d3;
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading-container,
+.error-container {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}
+
+.error-container {
+  color: #c33;
+}
+
+@media (max-width: 768px) {
+  .profile-detail-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .profile-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .profile-detail-page {
+    background: #121212;
+  }
+
+  .profile-detail-header,
+  .profile-section {
+    background: #1a1a1a;
+  }
+
+  .profile-detail-header h1,
+  .profile-section h2 {
+    color: #ffffff;
+  }
+
+  .profile-email,
+  .profile-contact {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .education-item,
+  .experience-item {
+    background: #2a2a2a;
+  }
+
+  .education-item h3,
+  .experience-item h3 {
+    color: #ffffff;
+  }
+}
