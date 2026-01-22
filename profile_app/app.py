@@ -1,6 +1,7 @@
 import logging
 from fastapi import FastAPI, HTTPException
 from fastapi.exception_handlers import http_exception_handler
+from fastapi.middleware.cors import CORSMiddleware # Cors middleware import
 from asgi_correlation_id import CorrelationIdMiddleware
 from contextlib import asynccontextmanager
 
@@ -18,11 +19,22 @@ async def lifespan(app: FastAPI):
     yield
     await db_connection.close()
 
+origins = [
+    "http://localhost:5173"
+]
 
 app = FastAPI(lifespan=lifespan)
 """Running on port 8001 by --port 8001"""
-app.add_middleware(CorrelationIdMiddleware)
+app.add_middleware(CorrelationIdMiddleware) #  Middleware fro logger
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials =True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+  
 app.include_router(auth.router)
 app.include_router(profile.router)
 app.include_router(user.router)
