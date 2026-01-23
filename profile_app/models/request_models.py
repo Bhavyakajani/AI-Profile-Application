@@ -53,7 +53,7 @@ class ProfileModel(BaseModel):
     work_experiences: List[WorkExperience] = Field(default_factory=list)
 
     #Years of Experience
-    YoE: Optional[str] =  None
+    YoE: Optional[float] = None
     #Creator(Some User)
     creator : str | None = None
 
