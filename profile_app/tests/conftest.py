@@ -13,7 +13,6 @@ from httpx import AsyncClient, ASGITransport
 from profile_app.app import app
 from profile_app.database.connection import db_connection
 from profile_app.database.dependencies import get_user_repository, get_profile_repository
-import profile_app.authentication.security as security
 
 @pytest.fixture(scope="session")
 def anyio_backend():

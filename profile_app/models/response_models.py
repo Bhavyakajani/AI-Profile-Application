@@ -64,7 +64,7 @@ class ProfileResponse(BaseResponseModel):
     skills: List[str] = Field(default_factory=list)
     educations: List[Education] = Field(default_factory=list)
     work_experiences: List[WorkExperience] = Field(default_factory=list)
-    YoE: Optional[str] = None
+    YoE: Optional[any] = None
     creator: str | None = None
 
 class ProfilesListResponse(BaseResponseModel):

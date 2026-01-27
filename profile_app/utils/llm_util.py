@@ -3,13 +3,7 @@ FORMAT = """{
           "name": "",
           "contact_number": "",
           "email": "",
-          "skills": [
-            "Python",
-            "Machine Learning",
-            "Data Analysis",
-            "SQL",
-            "JavaScript"
-          ],
+          "skills": ["<skills>"],
           "educations": [
             {
               "institution": "",

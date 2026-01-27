@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, status, Response, Depends, UploadF
 
 from profile_app.database.dependencies import get_profile_repository, get_user_repository
 from profile_app.database.repositories import ProfileRepository, UserRepository
-from profile_app.models.request_models import TokenData, ProfileModel, User
+from profile_app.models.request_models import ProfileUpdateModel, TokenData, ProfileModel, User
 from profile_app.models.response_models import ProfileResponse, ProfilesListResponse
 from profile_app.services import user_service
 import profile_app.utils.app_util as util
@@ -96,7 +96,7 @@ async def delete_profile_by_id(
 @router.patch('/{id}', status_code=202)
 async def update_profile(
     id: str,
-    profile: ProfileModel,
+    profile: ProfileUpdateModel,
     current_user: Annotated[User, Depends(get_current_user)],
     profile_repo: Annotated[ProfileRepository, Depends(get_profile_repository)],
     user_repo: Annotated[UserRepository, Depends(get_user_repository)]
@@ -105,10 +105,10 @@ async def update_profile(
     util.is_valid_objectId(id)
 
     logged_in_user = await user_repo.find_by_email(current_user.email)
-    profile  =await profile_repo.find_by_id(id)
+    profile_dict  =await profile_repo.find_by_id(id)
 
     is_admin = user_service.is_user_admin(logged_in_user)
-    is_owner = profile["email"] == current_user.email
+    is_owner = profile_dict["email"] == current_user.email
     if not (is_admin or is_owner):
         raise HTTPException(status_code=401, detail="Unauthorized access")
 
@@ -160,7 +160,7 @@ async def parse_profile(
     logger.info("Saving uploaded file for parsing")
     file_path, stored_name, file_id = dp.save_upload_file_tmp(file)
     logger.info("Parsing Profile")
-    profile_model = util.parse_resume(file_path, current_user, profile_repo)
+    profile_model = await util.parse_resume(file_path, current_user, profile_repo)
     if not profile_model:
         raise HTTPException(status_code=400, detail="Profile exists or an error might have occurred")
     return profile_model

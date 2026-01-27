@@ -27,6 +27,13 @@ async def login(
     if not util.verify_password(hashed_pwd=user_dict["password"], pwd=request.password):
         raise HTTPException(status_code=401, detail="Incorrect password")
 
+    # Check if user status is "waiting"
+    if user_dict.get("status") == "waiting":
+        raise HTTPException(
+            status_code=403, 
+            detail="Your account is pending approval. Please wait for an administrator to approve your account."
+        )
+
     # Generate JWT
     access_token = create_access_token(
         data={"sub": user_dict["email"]}
