@@ -23,9 +23,7 @@
 \usepackage{xcolor}
 \usepackage{caption}
 \usepackage{makecell}
-\usepackage{tocloft}
-\usepackage{courier} % Better monospace font
-
+\usepackage{courier}
 
 \raggedbottom
 
@@ -509,16 +507,19 @@ The following use case diagrams illustrate the interactions of different user ro
             Login & $\checkmark$ & $\checkmark$ & $\checkmark$ \\ \hline
             User Register & $\checkmark$ & $\checkmark$ & $\checkmark$ \\ \hline
             Get User & $\checkmark$ & $\checkmark$ & $\checkmark$ \\ \hline
+            Update User & $\checkmark$ & $\checkmark$ & $\checkmark$ \\ \hline
+            Delete User & $\checkmark$ & $\times$ & $\times$ \\ \hline
             role-approval-list & $\checkmark$ & $\times$ & $\times$ \\ \hline
             Update User Role & $\checkmark$ & $\times$ & $\times$ \\ \hline
             Search Profile by name & $\checkmark$ & $\checkmark$ & $\times$ \\ \hline
-            Update User & $\checkmark$ & $\checkmark$ & $\checkmark$ \\ \hline
-            Delete User & $\checkmark$ & $\times$ & $\times$ \\ \hline
             Create a Profile & $\checkmark$ & $\times$ & $\checkmark$ \\ \hline
             Get all Profile & $\checkmark$ & $\checkmark$ & $\times$ \\ \hline
-            Get a Profile & $\checkmark$ & $\checkmark$ & $\times$ \\ \hline
+            Get specific Profile & $\checkmark$ & $\checkmark$ & $\checkmark$ \\ \hline
             Update Profile & $\checkmark$ & $\times$ & $\checkmark$ \\ \hline
             Parse Profile & $\checkmark$ & $\times$ & $\checkmark$ \\ \hline
+            Delete Profile & $\checkmark$ & $\times$&$\times$ \\ \hline
+            
+            
         \end{tabular}
         \label{role_matrix}
     \end{table}
@@ -971,11 +972,238 @@ Remaining non-AI API endpoints perform really well under stress with maximum of 
 
 \cleardoublepage
 \listofappendicestoc
+\newpage
+
+% --- Appendix figure numbering fix (EITI-safe) ---
+\makeatletter
+\setcounter{section}{0}
+\renewcommand{\thesection}{\Alph{section}}
+\renewcommand{\thefigure}{\thesection.\arabic{figure}}
+\setcounter{figure}{0}
+\makeatother
 \appendix{Installation Guide}
-Upload installation guides in PDF format.
-Upload installation guides and user guides in apd. All in .pdf format and Test Data: Anonymize 3 resumes and add in the github repo  
+\subsection{Prerequisites:}
+The following steps are required to run this app locally:
+\begin{enumerate}
+    \item Install \textbf{Ollama} and pull the \verb|llama3.2:3b| model locally \cite{llama_docs}
+    
+    \verb|ollama pull llama3.2:3b|
+    
+    \item \textbf{Git} to clone repositories
+    \item Install \textbf{Python} (3.10 or newer) for backend and  \textbf{Node.js and npm} for frontend on your system.
+    \item An IDE or code editor like \textit{Visual Studio Code}.
+    \item Access credentials for external services, such as a MongoDB connection URI.
+\end{enumerate}
+
+\subsection{Setting up the Backend (Python)}
+\begin{enumerate}
+    \item Clone the repository: \verb|git clone|
+    
+    \verb|https://github.com/Bhavyakajani/AI-Profile-Application.git|
+    
+    \item Open the project in a IDE and navigate to the folder \textit{profile\_llama} from the terminal: \verb|cd profile_llama|
+    \item Create a virtual environment \verb|python -m venv <your_env_name>| and activate it using the following command: 
+    
+    \textbf{Windows:} \verb|.\<your_env_name>\Scripts\activate|
+
+    \textbf{MacOS/.Linux:} \verb|source .<your_env_name>/bin/activate|
+    
+    \item Setup the following variables in your \verb|.env| file:
+        \begin{lstlisting}[language=PythonCustom, caption={Environment configuration variables}]
+        # Select active environment
+        ENV_STATE="dev"  # dev | test | prod
+        
+        # Development environment
+        DEV_SECRET_KEY="dev-secret-key"
+        DEV_MONGODB_URI="YOUR_MONGO_URI"
+        DEV_DB_NAME="ProfileDB_DEV"
+        DEV_MONGO_HOST="YOUR_MONGODB_HOST"
+        DEV_MONGO_PORT="YOUR_MONGODB_PORT"
+        
+        # Production environment
+        PROD_SECRET_KEY="prod-secret-key"
+        PROD_MONGODB_URI="YOUR_PROD_MONGO_URI"
+        PROD_DB_NAME="ProfileDB_PROD"
+        \end{lstlisting}
+
+    \item Install the requirements for running the FastAPI backend:
+
+    \verb|pip install -r requirements-dev.txt|
+
+    \item Install \textbf{Tesseract OCR} and ensure it is available in the system PATH.
+    
+    \item Ensure the Ollama service is running before starting the backend.
+
+    \verb|ollama run llama3.2:3b|
+    
+    \item Run the server using the following command:
+    
+    \verb|uvicorn profile_app.app:app --reload|
+
+    \item The backend should be running on the URL:  \verb|http://127.0.0.1:8000| and to view the endpoints in SwaggerUI, navigate to the URL: 
+    
+    \verb|http://127.0.0.1:8000/docs|.
+
+\end{enumerate}
+
+\subsection{Setting up the Frontend (React)}
+
+    \begin{enumerate}
+        \item Open a new terminal and navigate to the folder:
+        
+        \verb|cd frontend| from the current folder (profile-llama).
+    
+        \item Install dependencies: \verb|npm install|
+
+        \item Start the development server: \verb|npm run dev|
+        
+        The frontend will run on \verb|http://localhost:5173|.
+    \end{enumerate}
+    
+\newpage
 \appendix{User Guide}
-Upload installation guides and user guides
+
+\subsection{Accessing the Application}
+ReSorcerer can be accessed at \verb|http://localhost:5173| by using a web-browser like Chrome, Brave or Edge on desktop devices.
+
+The landing page is the entry point of the ReSorcerer application. It is accessible without authentication and provides users with options to either log in to an existing account or register as a new user.
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{img/Figures/LandingPage.png}
+    \caption{Landing Page}
+    \label{fig:landing_page}
+\end{figure}
+
+\subsection{Authentication: Login and Registration}
+New users can register on the platform to get their account approved by the Admin. Approved users can login to the application.
+
+\begin{figure}[H]
+    \centering
+    \subfloat[Login Form]{
+        \includegraphics[width=0.45\textwidth, height=6cm]{img/Figures/Login.png}
+        \label{fig:login_form}
+    }
+    \hfill
+    \subfloat[Register Form]{
+        \includegraphics[width=0.45\textwidth, height=6cm]{img/Figures/Register.png}
+        \label{fig:register_form}
+    }
+    \caption{Entry Point}
+    \label{fig:entry}
+\end{figure}
+
+\subsection{Browsing and Searching Profiles}
+Authenticated users land on the homepage where they can browse profiles. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{img/Figures/HomePage.png}
+    \caption{Homepage}
+    \label{fig:homepage}
+\end{figure}
+
+To search for a specific profile, click on the \textit{Search Bar} and type the name of the desired candidate then hit the \textit{Search Icon} in the navigation bar.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{img/Figures/SearchView.png}
+    \caption{Searching for a Profile}
+    \label{fig:search_view}
+\end{figure}
+
+\subsection{Navigation Bar}
+When landing on the homepage, depending on the role assigned by the admin, the user can see the certain buttons on the navigation bar.
+
+\begin{itemize}
+    \item A client and candidate can only see two buttons, \textbf{Create Profile} \& \textbf{My Account}.
+    \item An admin can see an extra button, \textbf{Admin} for administrative purposes.
+\end{itemize}
+
+\subsection{Viewing Profile Details}
+Click on the profile cards appearing on the page to view more details about a candidate.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{img/Figures/ViewProfile.png}
+    \caption{Profile View}
+    \label{fig:view_profile}
+\end{figure}
+
+\textbf{\textit{Note:}} 
+\begin{itemize}
+    \item Only an admin can \textbf{delete} or \textbf{edit} all the profiles from the detailed profile view when navigating from the profile cards present on the homepage.
+
+    \item A candidate can only edit the profile if they are the creator of that profile.
+
+    \item A client has only read-only rights.
+\end{itemize}
+
+\subsection{Managing User Account}
+In order to view details related to users account such as personal information and created profiles, they can navigate to 'My Account' page.
+
+\subsubsection{Viewing Account Information}
+A user can view their account information by first clicking the button on the top right corner of the page that shows their name (e.g Bhavya Kajani as shown in the figure \ref{fig:view_profile}) then selecting the 'My Account' option from the drop-down list.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{img/Figures/AccountPage.png}
+    \caption{My Account (Admin)}
+    \label{fig:account_page}
+\end{figure}
+
+The 'My Account' page includes users personal information such as, \textit{name, email, status of account} (approved or waiting) and \textit{role} assigned (admin, candidate or client).
+
+For Admins and Candidates, this page also includes the list of profiles created by them. Admins also can navigate to the Admin View \ref{admin_page} from the same page.
+
+\subsubsection{Edit Account Information}
+All authenticated users can edit their account information including password by clicking on the 'Edit Account' button on the right corner of the account details as shown in figure \ref{fig:account_page}.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{img/Figures/EditAccount.png}
+    \caption{Edit Account Info}
+    \label{fig:edit_account}
+\end{figure}
+
+
+\subsection{Profile Management}
+\subsubsection{Profile Creation}
+All \textit{admins }and\textit{ candidates} can create profiles in the system. To do this, they can click on the button on the navigation bar, '\textit{Create Profile}'.
+
+Profiles can be created in two ways, first is by manually inputting the details of a candidate into the system. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{img/Figures/ManualProfile.png}
+    \caption{Manual Creation}
+    \label{fig:manual_profile}
+\end{figure}
+Another way is to use AI to generate profiles from the resume. \textit{When on the Create New Profile} page, under the \textit{AI Assist} tab, the authorized user needs to upload a resume by clicking the upload button as shown in the figure below.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{img/Figures/AIAssist.png}
+    \caption{AI profile generation}
+    \label{fig:ai_assist}
+\end{figure}
+Clients cannot create a profile in the system. Upon navigation to the \textit{Create New Profile} page, they are informed with an apt message.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{img/Figures/ClientCreate.png}
+    \caption{Unauthorized Access}
+    \label{fig:client_create}
+\end{figure}
+
+\subsubsection{Edit \& Delete Profiles}
+As mentioned in the role matrix table \ref{role_matrix}, admins are allowed to edit and delete all profiles, candidates are allowed to only edit the profiles created by them and clients have no modification rights for profiles.
+
+The profile can be \textbf{edited} either from the profile cards on the '\textit{Homepage}' or from the list shown on the '\textit{My Account Page}'. The edit form re-uses the component shown in the \textit{Create New Profile} view \ref{fig:manual_profile}. Admins can \textbf{delete} a specific profile by navigating to the Detailed Profile view \ref{fig:view_profile}. 
+
+\subsection{Administrative Functions} \label{admin_page}
+Besides editing and deleting a profile, admins can approve a user to be registered in the system. To do this, they can navigate to the Admin Page by clicking on either the \textit{Admin} button on the navigation bar or by going to the \textit{My Account} page clicking on the Admin actions button by scrolling at the bottom of the page.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{img/Figures/AdminPage.png}
+    \caption{Role Approval List}
+    \label{fig:admin_role_approval}
+\end{figure}
+
+Admins can also reject a users request for registering into the system. This prevents any unintended users from accessing the application ever.
 
 \cleardoublepage % Zaczynamy od nieparzystej strony
 % \printbibliography
