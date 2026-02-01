@@ -119,16 +119,29 @@
 %--------------------------------------
 \cleardoublepage % Zaczynamy od nieparzystej strony
 \streszczenie
-PLACEHOLDER
-\slowakluczowe XXX, XXX, XXX
+Zarządzanie zasobami w firmie, takiej jak firma konsultingowa, jest trudnym i czasochłonnym zadaniem. Zazwyczaj obejmuje ono pozyskiwanie życiorysów kandydatów, przechowywanie ich w systemie plików oraz ręczne przeglądanie każdego dokumentu w celu zidentyfikowania odpowiednich kandydatów do projektów klientów. Kroki te są często powtarzane przez wielu interesariuszy, co prowadzi do nieefektywności, powielania pracy oraz zwiększonego ryzyka błędów ludzkich. Te niedogodności i problemy zostały podjęte w niniejszej pracy poprzez implementację systemu ReSorcerer.
+
+ReSorcerer jest rozwiązaniem opartym na sztucznej inteligencji, które usprawnia proces oceny i dostarczania profili kandydatów. Umożliwia ono kandydatom jednorazowe przesłanie swoich życiorysów do systemu, na podstawie których automatycznie generowane są ustrukturyzowane profile przy użyciu dużego modelu językowego. Administrator nie musi ręcznie zarządzać każdym profilem w celu jego prezentacji potencjalnemu klientowi, natomiast klienci mogą samodzielnie przeglądać i analizować profile kandydatów.
+
+ReSorcerer został opracowany w architekturze FARM, wykorzystując React.js do dynamicznego renderowania komponentów interfejsu użytkownika. FastAPI jest prostym i lekkim asynchronicznym frameworkiem API opartym na protokole HTTP w języku Python, który został użyty do implementacji backendu. Dane wyodrębnione z profili są przechowywane w nierelacyjnej bazie danych MongoDB. Aplikacja obsługuje wiele formatów plików przesyłanych przez użytkowników.
+
+Aplikacja została gruntownie przetestowana przy użyciu automatycznych testów jednostkowych, wydajnościowych i integracyjnych oraz testów manualnych, co wskazuje, że ReSorcerer jest bezpieczny, niezawodny i łatwy w utrzymaniu. Wyniki testów potwierdzają również, że aplikacja spełnia wymagania funkcjonalne i niefunkcjonalne, realizując tym samym założenia określone na wczesnym etapie projektu. Praca pokazuje, w jaki sposób różne formaty plików oraz dane niestrukturalne mogą być przetwarzane poprzez wykorzystanie możliwości dużych modeli językowych, które zapewniają wystarczająco dobre rezultaty dla tego typu zadań.
+
+\slowakluczowe Parser CV, Platforma Dostarczania Zasobów, Architektura FARM, FastAPI, React, Llama 3.2, MongoDB, NoSQL
 
 %--------------------------------------
 % Streszczenie po angielsku
 %--------------------------------------
 \newpage
 \abstract
- PLACEHOLDER
-\keywords XXX, XXX, XXX
+Managing resources in a company such as a consulting firm, is a difficult and time-consuming task. It typically involves requesting a candidates resume and storing it in a file system and manually reviewing each document to identify suitable candidates for client projects. These steps are often repeated by multiple stakeholder that leads to inefficiencies, duplication of effort and increased risk of human error. This discomfort and inconvenience is tackled in this thesis by the implementation of ReSorcerer.
+
+ReSorcerer is an AI-powered solution that streamlines the process of evaluating and delivering of candidate profiles. It enables candidates to submit their resumes in the system only once for a structured profile generation automatically by using large language model. The admin does not need to micro manage each of the profiles manually to be presented to a potential client whereas the clients can independently browse and review the candidates profiles.
+
+ReSorcerer is developed in a FARM-based architecture that utilizes React.js to render frontend components dynamically. FastAPI is a simple and light-weight HTTP-based asynchronous service API framework in python that is used for developing the backend. The extracted data from a profile is persisted in a NoSQL MongoDB database. The application supports multiple formats for a file upload.
+
+The application was extensively tested through automated unit, performance, integration and manual tests that suggest that ReSorcerer is secure, reliable and maintainable. The tests results also imply that the application fulfills its functional and non-functional requirements thus meeting the expectations set early on. The thesis shows how different file formats and unstructured data can be handled by leveraging the quirks of LLM which produces more than good enough results for such a task.
+\keywords Resume Parser, Resource Delivery Platform, FARM Architecture, FastAPI, React, Llama3.2, MongoDB, NoSQL
 
 %--------------------------------------
 % Oświadczenie o autorstwie
@@ -456,7 +469,7 @@ The following use case diagrams illustrate the interactions of different user ro
         \hline
             /profile/search & GET & Authenticated & Enables searching a specific Profile based on a name \\
         \hline
-        \end{tabularx}
+    \end{tabularx}
         \caption{Interfaces of Business Logic Layer}
         \label{tab:enpoints}
     \end{table}
@@ -650,21 +663,23 @@ One of the more important and tricky aspects of the system is handling the file 
 \end{itemize}
 
 \begin{lstlisting}[language=PythonCustom, caption={Detection of file extensions}]
-    if path.endswith(".pdf"):
-        loader = PyPDFLoader(path)
-        pages = loader.load()
-        return pages
-    
-    elif path.endswith(".pptx"):
-        prs = Presentation(path)
-        # extract text from each slide and store it in text_runs
-        return text_runs
-        
-    elif path.endswith(".jpg") or path.endswith(".jpeg") 
-        or path.endswith(".png"):
-            image = cv2.imread(path)
-            text = pytesseract.image_to_string(image)
-            return text
+if path.endswith(".pdf"):
+    loader = PyPDFLoader(path)
+    pages = loader.load()
+    return pages
+
+elif path.endswith(".pptx"):
+    prs = Presentation(path)
+    return text_runs
+
+elif (
+    path.endswith(".jpg")
+    or path.endswith(".jpeg")
+    or path.endswith(".png")
+):
+    image = cv2.imread(path)
+    text = pytesseract.image_to_string(image)
+    return text
 \end{lstlisting}
 
 In this way, the text is extracted and passed into the prompt for an LLM to be used as a context.
@@ -902,7 +917,7 @@ Overall, the results confirm that the system is performant for standard operatio
     
     \subsection{Requirements Validation}
 All the functional \ref{func_req} and non-functional \ref{non_func_req} requirements  outlined in chapter 2 are achieved by developing the system features with keeping in mind the best practices and testing them through both automated and manual tests. 
-\paragraph{\textbf{Functional Requirements}:}
+\paragraph{Functional Requirements:}
 \begin{itemize}
     \item \textbf{F1. User Authentication}: This was acheived by implementing JSON Web Tokens (JWT) which were tested in client-side and server-side unit tests.
     \item \textbf{F2. Profile Management:} The creation (manual and AI assisted), update, delete  and read (CRUD) functionalities of Profile were tested by backend unit test, integration test with external services and manual frontend testing.
@@ -954,8 +969,14 @@ Remaining non-AI API endpoints perform really well under stress with maximum of 
         \item \textbf{Bookmark}: Allowing the clients to be able to shortlist a few candidates by bookmarking their profiles, with whom they can either get in touch with or review later for future opportunities.
     \end{enumerate}
 
-\appendix
+\cleardoublepage
+\listofappendicestoc
+\appendix{Installation Guide}
+Upload installation guides in PDF format.
 Upload installation guides and user guides in apd. All in .pdf format and Test Data: Anonymize 3 resumes and add in the github repo  
+\appendix{User Guide}
+Upload installation guides and user guides
+
 \cleardoublepage % Zaczynamy od nieparzystej strony
 % \printbibliography
 \listoffigures
