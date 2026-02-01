@@ -698,7 +698,8 @@ When the environment variable \verb|ENV_STATE| is set to one of the supported va
 
 
 \begin{lstlisting}[language=PythonCustom, caption={Object creation for environment configuration}]
-    def get_config(env_state: Optional[str] = None) -> GlobalConfig:
+    def get_config(env_state: Optional[str] = None) 
+    -> GlobalConfig:
     print(f"Detecting environment: {env_state}")
     configs = {
         "dev": DevConfig,
