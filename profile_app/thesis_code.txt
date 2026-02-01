@@ -16,6 +16,79 @@
     sorting=none
 ]{eiti/eiti-thesis}
 \usepackage{subfig}
+\usepackage{array}
+\usepackage{float}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{makecell}
+\usepackage{tocloft}
+\usepackage{courier} % Better monospace font
+
+
+\raggedbottom
+
+
+\captionsetup[lstlisting]{
+  skip=6pt,
+  belowskip=0pt
+}
+
+\lstdefinelanguage{PythonCustom}{
+  keywords={False,None,True,and,as,assert,async,await,break,class,continue,
+    def,del,elif,else,except,finally,for,from,global,if,import,in,is,
+    lambda,nonlocal,not,or,pass,raise,return,try,while,with,yield},
+  keywordstyle=\color{blue}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=true,
+  comment=[l]{\#},
+  commentstyle=\color{darkgray}\ttfamily\itshape,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstdefinelanguage{JSX}{
+  keywords={const,let,var,function,return,if,else,for,while,break,continue,
+    import,from,export,default,class,extends,super,this,new,try,catch,
+    finally,throw,async,await},
+  ndkeywords={true,false,null,undefined},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywordstyle=\color{magenta}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=true,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{gray}\ttfamily\itshape,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]",
+}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{gray!10},
+  frame=single,
+  frameround=tttt,
+  rulecolor=\color{gray},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=8pt,
+  breaklines=true,
+  breakatwhitespace=true,
+  showstringspaces=false,
+  showspaces=false,
+  showtabs=false,
+  captionpos=b,
+  tabsize=2,
+  xleftmargin=15pt,
+  columns=flexible,
+  postbreak=\mbox{\textcolor{gray}{$\hookrightarrow$}\space},
+  aboveskip=1em                            
+}
+
+
 \langeng % Dla języka angielskiego mamy \langeng
 \graphicspath{{img/}}             % Katalog z obrazkami.
 \addbibresource{bibliografia.bib} % Plik .bib z bibliografią
@@ -61,7 +134,7 @@ PLACEHOLDER
 % Oświadczenie o autorstwie
 %--------------------------------------
 \cleardoublepage  % Zaczynamy od nieparzystej strony
-\pagestyle{plain}
+\pagestyle{headings}
 \makeauthorship
 
 %--------------------------------------
@@ -79,32 +152,66 @@ This project addresses these challenges by developing an intelligent profile man
 \subsection{Problem Description}
 The recruitment industry faces several critical challenges in candidate profile management:
 
-Information Extraction Complexity: Resumes come in multiple formats (PDF, PPTX, JPG, PNG, JPEG) with varying structures, making consistent data extraction difficult. Manual data entry is labor-intensive and susceptible to errors, leading to inconsistent candidate databases.
+\textbf{Information Extraction Complexity:} Resumes come in multiple formats (PDF, PPTX, JPG, PNG, JPEG) with varying structures, making consistent data extraction difficult. Manual data entry is labor-intensive and susceptible to errors, leading to inconsistent candidate databases.
 
 \textbf{Data Standardization Issues:} Different candidates present similar information in diverse formats (e.g., date formats, skill categorization, experience descriptions), creating challenges for comparative analysis and searching.
 
 \textbf{Access Control and Security:} Managing user permissions and ensuring data security while allowing appropriate access levels for different user roles (admin vs. regular users) requires robust authentication and authorization mechanisms.
 
-\textbf{Scalability and Performance:} As the number of candidates grows, systems must efficiently handle increased load while maintaining response times for profile searches, updates, and document processing.
+\textbf{Scalability and Performance:} As the number of candidates grows, the systems must efficiently handle the increased load while maintaining response times for profile searches, updates, and document processing.
 
 \subsection{Problem Solution}
-To do at last
- 
-\subsection{Structure of the Report}
-To do at last
+In order to tackle the challenges mentioned above, this thesis aims to implement an effective solution that allows structured and scalable approach to automated candidate profile management.
 
-\section{Similar Solutions and Differentiation}
-    \subsection{Example 1}
-    \subsection{Conclusion: Why choose current}
-To do at last
+The information extraction complexity is addressed by allowing multiple formats of resumes with varying structure to be parsed through a pipeline. This extracted data should help reduce or avoid the manual data entry overall. To mitigate data standardization issues, the system enforces a streamlined profile schema for all the candidate resumes. Any information provided by candidate in different manners can be presented in a unified way to maintain consistency. Then those created profiles can only be accessed by authenticated and authorized users which has been made possible by integrating the system with a role-based access control which addressed our concern for security risks. Finally to address scalability and performance issues, the system is made modular to extend the it in future and also handle increased workloads without compromising largely on responsiveness.
 
+Overall, combining these principles addresses the issues identified that should valuably provide a foundation for an automated hiring support system. 
 
+\pagebreak
+\section{Similar Solutions}
+This chapter will uncover how our solution is a better balanced and different than a few other solutions that exists in the market. 
+    \subsection{RChilli: LLM/GPT Parser}
+    Rchilli offers an LLM based parser enhancement API that extracts structured information from resume.  It offers a system that is scalable, highly accurate, and flexible. It includes a wide range of formats and provides more than 200 structured data points to reduce manual entry. It offers parsing via Open AI and Azure Open AI .
+    Despite its powerful parsing capabilities and easy integration, it comes with a few downsides like cost, security concerns, as the models used can raise data privacy issues. It is also primarily a backend service which lacks the full end-to-end service for managing profiles \cite{rchilli}.
+    \subsection{CVlizer}
+    CVlizer is an innovative tool that automatically extracts data from application documents. It converts unstructured data from CV documents into a structured form that is easier to process and analyze.  It can read PDF, Word and many other file formats.
+    The downside is that it is a paid service and does not offer complete profile management feature with user focused role based access.
+    
+    \subsection{Affinda}
+    Affinda also provides a LLM based information extraction service for any file type and in any structure. It acts as an external service that can integrate with HR services, Application Tracking System(ATS) and job boards. It allows the user to find similar profiles available in the system along with job description parsing and resume redaction.
+    While it does offer the profile lookup feature, it is still not a full-fledged profile creation and management system.  
+    \subsection{Refuel}
+    Refuel is a resume parsing platform built by keeping in mind the shortcomings of traditional resume parsers like multiple formats, lack of standardization, and jargon keywords. It allows users to specify extraction columns and plain-language guideline for each field, producing structured resume output in JSON-style formats. 
+    This also lacks a profile management feature that provides role based access control to the users.. It mainly focuses on bulk extraction and general data tasks.
+    \subsection{Conclusion}
+    Each of the above solution offer CV/Resume parsing services that can be integrated with systems like HR services, ATS or job boards. But none of them provides the correct balance of features. ReSorcerer not only provides a digestive parsing feature that creates a profile based on the resume but also manual profile creation. It offers better security by allowing only authenticated users to access the environment. It also includes a role-based access control that ensure only authorized user are able to access certain features like profile creation, editing a profile, assigning a role to the user and so on. The use of a native LLM (Llama3.2b) adds to the security and reduces the data privacy risks. The application can also use the cloud Llama model in a virtual private environment to protect the data. All this is offered in one unified system. 
+
+    Table below points out the complete side-by-side comparison of the similar solutions with ReSorcerer.
+
+    \begin{table}[H]
+        \centering
+        \caption{Comparison of Similar Solutions with ReSorcerer}
+        \label{tab:solution_comparison}
+        \begin{tabular}{|l|c|c|c|c|c|}
+            \hline
+            \textbf{Feature / Platform} & \textbf{Rchilli} & \textbf{CVlizer} & \textbf{Affinda} & \textbf{Refuel} & \textbf{ReSorcerer} \\ \hline
+            Role-based access & $\times$ & $\times$ & $\times$ & $\times$ & $\checkmark$\\ \hline
+            AI parsing & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\ \hline
+            Manual Profile Creation & $\times$ & $\times$ & $\times$ & $\times$ & $\checkmark$ \\ \hline
+            Multiple file formats & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\ \hline
+            Secure native LLM Option & $\times$ & $\times$ & $\times$ & $\times$ & $\checkmark$\\ \hline
+            Free to use & $\times$ & $\times$ & $\times$ & $\times$ & $\checkmark$\\ \hline
+        \end{tabular}
+    \end{table}
+    
+
+\pagebreak
 \section{Analysis \& Specifications}
-\subsection{Analysis}
+\subsection{Analysis} \label{Analysis}
 
-The \textbf{AI-Powered Profile Application} aims to simplify candidate evaluation and profile management for consulting businesses. It supports three primary roles: Candidates, Managers (Administrators) and Clients. Candidates can create and update profiles to maintain accurate information. Managers oversee profile creation, editing, deletion, and permission control. Clients can browse, search, and filter profiles based on criteria such as skills or experience to efficiently identify suitable candidates.
+\textbf{ReSorcerer} aims to simplify the evaluation of candidates and the management of profiles for consulting companies. It supports three primary roles: Candidates, Admins (Administrators), and Clients. Candidates can create and update profiles to maintain accurate information. Managers oversee profile creation, editing, deletion, and permission control. Clients can browse, search, and filter profiles based on criteria such as skills or experience to efficiently identify suitable candidates.
 
-\subsection{Functional Requirements}
+\subsection{Functional Requirements} \label{func_req}
 The following functional requirements describe what the Profile Management System must be able to do to provide efficient resume parsing and candidate profile management:
 
 \begin{itemize}
@@ -123,28 +230,27 @@ The following functional requirements describe what the Profile Management Syste
     \end{itemize}
 
     
-\item \textbf{F3. Search and Filter Functionality:}
+\item \textbf{F3. Search Functionality:}
     \begin{itemize}
-    \item F3.1: Clients can search profiles by the name of candidates.
-    \item F3.2: Clients can filter profiles based on skills (e.g. Java, Python).
-    \item F3.3: Clients can fitler profiles based on years of experience (e.g. 0 years, 5 years)
+    \item F3.1: Authenticated Users can search profiles by the name of candidates.
     \end{itemize}
     
 \item \textbf{F4. Admin Functionalities:}
     \begin{itemize}
-    \item F4.1: Admin can create
-    profiles manually or using AI.
+    \item F4.1: Admin can create profiles manually or using AI.
     \item F4.2: Admins can modify profiles.
     \item F4.3: Admin can delete profiles.
     \item F4.4: Admin can delete a Users account.
+    \item F4.5: Admin can approve the role for a user.
+    \item F4.6: Admin can reject a request for role approval.
     \end{itemize}
 \end{itemize}
-\subsection{Non-Functional Requirements}
+\subsection{Non-Functional Requirements} \label{non_func_req}
 
 The non-functional requirements define the overall quality attributes, performance expectations, and system constraints.
 
 \begin{itemize}
-\item \textbf{NF1. Performance:}
+\item \textbf{NF1. Performance:} \label{perf_req}
     \begin{itemize}
     \item NF1.1: Resume parsing (AI-assisted profile creation) should complete within 60 seconds under normal conditions for standard resumes ($\leq$5 pages).
     \item NF1.2: All rest of API requests should take less than \textit{3 seconds} under normal load.
@@ -160,8 +266,7 @@ The non-functional requirements define the overall quality attributes, performan
 
 \item \textbf{NF3. Responsive UI:}
     \begin{itemize}
-    \item NF3.1: The system must allow users to access and interact with all features on
- desktop, tablet, and mobile devices.
+    \item NF3.1: The system must allow users to access and interact with all features on desktop, tablet, and mobile devices.
     \end{itemize}
 
 \item \textbf{NF4. Usability:}
@@ -178,7 +283,7 @@ The non-functional requirements define the overall quality attributes, performan
 
 \item \textbf{NF6. Security:}
     \begin{itemize}
-        \item NF6.1: User credentials shall be stored using secure password hashing algorithms (e.g., bcrypt).
+        \item NF6.1: User credentials shall be stored using secure password hashing algorithms (e.g., bcrypt, HS256).
         \item NF6.2: Role-based access control (RBAC) shall enforce permission boundaries — only administrators can modify or delete other users and profiles.
         \item NF6.3: The data extracted locally and shared to the AI model (Llama3.2) should not be shared outside the environment, as the model runs locally.
     \end{itemize}
@@ -196,46 +301,35 @@ The non-functional requirements define the overall quality attributes, performan
 
 \end{itemize}
 
-% \subsection{Use Case Diagram}
-% The following use case diagrams provide a high-level overview on how users interact with the system.
+
 \subsection{Use Case Diagrams}
-The following use case diagrams illustrate the interactions of different user roles within the AI-Powered Profile Application. 
-The diagrams are organized hierarchically, starting from unauthenticated users to authenticated users and their respective sub-roles (Candidates, Clients, and Admins).
+The following use case diagrams illustrate the interactions of different user roles within the ReSorcerer.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.45\linewidth]{img/Figures/Unauth_user.png}
-    \caption{Use Case Diagram for an Unauthenticated User}
-    \label{fig:usecase-unauth}
+    \includegraphics[width=0.8\linewidth]{img/Figures/actors_h.png}
+    \caption{Use Case Diagram of Unauthenticated User and Client}
+    \label{fig:actors}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.45\linewidth]{img/Figures/Auth_User.png}
-    \caption{Use Case Diagram for an Authenticated User}
-    \label{fig:usecase-auth}
+    \includegraphics[width=0.9\linewidth]{img//Figures/unauth_client.png}
+    \caption{Use Case Diagram of Unauthenticated User and Client}
+    \label{fig:usecase-unauth-client}
 \end{figure}
 
-\begin{figure}[h]
+
+
+\begin{figure}[H]
     \centering
-    \subfloat[Candidate]{
-        \includegraphics[width=0.45\linewidth]{img/Figures/Candidate_User.png}
-        \label{fig:usecase-candidate}
-    }
-    \hfill
-    \subfloat[Client]{
-        \includegraphics[width=0.45\linewidth]{img/Figures/Client_user.png}
-        \label{fig:usecase-client}
-    } \\
-    \vspace{1em}
-    \subfloat[Admin]{
-        \includegraphics[width=0.45\linewidth]{img/Figures/Admin_User.png}
-        \label{fig:usecase-admin}
-    }
-    \caption{Use Case Diagrams for Authenticated User Roles: (a) Candidate, (b) Client, and (c) Admin}
-    \label{fig:usecase-auth-roles}
+    \includegraphics[width=1\linewidth]{img/Figures/admin_candidate.png}
+    \caption{Use Case Diagram of Unauthenticated User and Client}
+    \label{fig:usecase-admin_candidate}
 \end{figure}
 
+
+\pagebreak
     \section{Technology Stack}
         \subsection{Backend Technologies}
             \subsubsection{Python}
@@ -262,16 +356,19 @@ The diagrams are organized hierarchically, starting from unauthenticated users t
             MongoDB serves as the primary database for storing user information, resumes, and AI-parsed profile data \cite{mongodb_docs}. 
             Its schema-less structure provides flexibility for storing variable-length resume content and supports advanced query operations, such as filtering by skills or experience.
             
-            \subsubsection{AI and Document Processing Modules}
-            The system integrates various tools for AI-assisted document parsing and text extraction. 
-            Tesseract OCR is employed for text extraction from image-based resumes \cite{tesseract_docs}, while \texttt{python-docx} and \texttt{python-pptx} are used for parsing Microsoft Word and PowerPoint formats, respectively. 
-            The parsed data is further processed using the Llama 3.2 model, which enhances contextual understanding and classification accuracy of resume content \cite{llama_docs}.
-            
-            \subsubsection{File Upload and Parsing Pipeline}
-            The application supports uploads in PDF, PPTX, and image formats. 
-            Each uploaded file is processed through a pipeline that includes text extraction, AI-assisted interpretation, and structured JSON generation for database insertion. 
-            This modular architecture enables easy expansion to new formats and AI models in the future.
         \subsection{Frontend Technologies}
+        \subsubsection{React}
+        In ReSorcerer, the front-end is developed using React. React is a library that enables building a user interface with reusable individual pieces called \verb|components| \cite{react_dev}. It is a free and open-source library built in JavaScript. It is also known as React.js or ReactJS \cite{react_wiki}. It was developed and is currently maintained by Meta (formerly Facebook).
+
+        React not only introduces re-usability of front-end components, but also make the components dynamic. React components receive data and return what should appear on the screen. A new data can be passed based on a specific interaction and react will update the page accordingly \cite{react_dev}. React manages 'state' of a component using hooks and Context API. Two types of hooks are used, \verb|useState| and \verb|useEffect| to manage a specific components state. And Context API is used to manage the components across the application.      
+        
+        \subsubsection{Vite}
+        The application uses Vite as the frontend build tool and development server to enable fast application startup, efficient module bundling, and rapid development with hot module replacement. It is named after the French word for “quick,” Vite delivers near-instantaneous development server startup and lightning-fast hot module replacement (HMR) by serving native ECMAScript modules directly to the browser during development, avoiding the upfront bundling step used by traditional tools \cite{vite_buildtool}. For production builds, Vite uses a highly optimized bundler under the hood to produce lean static assets. Vite provides a bunch of templates for creating the frontend. The preset scaffolding options that are offered to jump start are \verb| react, vue, vanilla, preact| and more, both available for \verb|JavaScript and TypeScript|.
+
+        \subsubsection{CSS}
+        To style the application, Cascading Style Sheets (CSS) were used  to describe the presentation of the HTML components. It is a type of stylesheet language that describes how elements should be rendered on screen, on paper, in speech or on other media. \cite{css_mdn}
+        
+        
         \subsection{AI Integration}
         The system integrates various tools for AI-assisted document parsing and text extraction, one of which is the Llama 3.2.
             \subsubsection{Llama 3.2}
@@ -281,7 +378,7 @@ The diagrams are organized hierarchically, starting from unauthenticated users t
 
             The 3B model offers an optimal balance between performance and efficiency for this system. It demonstrates higher accuracy and contextual understanding than the smaller 1B variant, particularly for summarization and structured text extraction tasks, while outperforming similar-sized models such as Gemma 2 (2.6B) and Phi 3.5-mini on benchmarks relevant to resume parsing. Unlike larger models (e.g., Llama 3.1 70B), the 3B variant operates efficiently on local hardware without distributed GPU resources, aligning with the project’s goal of offline, cost-effective inference.
 
-        \subsection{External APIs}
+        \subsection{External APIs} \label{tech_stack_external}
             \subsubsection{LangChain Integration}
           LangChain is a framework for building applications powered by large language models (LLMs). It provides a unified interface to access LLMs and related components such as embedding models, vector stores, and prompt management tools, with support for integration across multiple providers \cite{langchain}. 
 
@@ -293,50 +390,576 @@ The diagrams are organized hierarchically, starting from unauthenticated users t
             In order to handle resumes in image formats (jpg, jpeg, and .png), we use pytesseract and OpenCV. Python-tesseract is an optical character recognition (OCR) tool for Python. That is, it will recognize and “read” the text embedded in images \cite{pytesseract}.
             OpenCV is an open source computer vision tool that is used to preprocess and analyze images with efficiency \cite{opencv_gfg}.
             In the application OpenCV helps in preparing the image for processing the texts which is handled by pytesseract by converting the texts in image to strings. This way the text is extracted from image type resumes or CV's.
-
+\pagebreak
 \section{System Architecture}
-    \subsection{Presentation Layer: Fourth}
-        \subsubsection{API Endpoints Structure}
-        \subsubsection{Request/Response Models}
-        Decouple the server part and only keep specific to client.
-        \subsubsection{System Navigation }
-    \subsection{Business Logic Layer: Second}
-        \subsubsection{Authentication Module}
-        \subsubsection{User Management Module}
-        \subsubsection{Profile Management Module}
-        \subsubsection{Document Processing Module}
-    \subsection{Data Layer}
-        \subsubsection{Database Manager: Third}
-        \subsubsection{Data Models}
-    \subsection{External Services Integration: Put first}
-    Describe this in some text before subsections, decide based on first draft.
-    \subsection{System Interfaces and DataFlow}
 
+    The architecture comprises of three layers: Presentation Layer, Business Layer and Data Layer. Each of the layers comprises of logically separated modules and each of them interact with their relevant parts between the layers in systematic way which is designed to be secure, scalable and easy to maintain.
+    Figure \ref{fig:system_arch} below describes an overview of the architecture to better understand the working of the system.
+
+    \begin{figure}[!h]
+        \centering
+        \includegraphics[width=1\linewidth]{img/Figures/system_architecture.png}
+                \caption{High-Level System Architecture of ReSorcerer}
+        \label{fig:system_arch}
+    \end{figure}
+
+
+    The system also interacts with a few external services to enable the Profile creation, namely Llama3.2, OpenCV, Tesseract and LangChain as mentioned in the section \ref{tech_stack_external}. 
+    
+    
+    \subsection{Business Logic Layer:}
+    The Business Logic Layer is implemented using FastAPI, a python based library. This layer acts as an interface between the Presentation Layer and Data Access Layer.
+
+    The below table \ref{tab:enpoints} outlines the interfaces implemented in this layer.
+
+    
+    \begin{table}[H]
+        \centering
+        \renewcommand{\arraystretch}{1}
+        \begin{tabularx}{\textwidth}{|l|c|c|X|}
+        \hline
+            Endpoint & Method & Access Level & Description \\
+        \hline    
+            \multicolumn{4}{|c|}{Auth} \\
+        \hline
+            /login & POST & Public & Returns a access token for a registered User \\
+            \hline    
+            \multicolumn{4}{|c|}{User} \\
+        \hline
+            /user/register & POST  & Public & Creates a User with Email, Password  \\
+        \hline
+            /user/\{id\} & GET  & Authenticated  & Returns details of a registered User \\
+        \hline    
+            /user/\{id\} & DELETE & Authenticated & Removes a User from the Database \\
+        \hline    
+            /user/\{id\} & PATCH & Authenticated & Updates the details of the User \\
+        \hline    
+            /user/role-approval-list & GET & Authenticated & Returns a list of Users waiting for role assignment \\
+        \hline    
+            /user/\{id\}/role & PATCH & Authenticated & Updates the role for the User \\
+        \hline    
+        
+            
+            \multicolumn{4}{|c|}{Profile} \\
+        \hline    
+            /profile & GET & Authenticated & Returns all the profiles in the system \\
+        \hline    
+            /profile & POST & Authenticated & Create a Profile manually \\
+        \hline    
+            /profile/parse & POST & Authenticated & Parse the resume and create a profile \\
+        \hline    
+            /profile/\{id\} & PATCH & Authenticated & Update an existing Profile \\
+        \hline    
+            /profile/\{id\} & DELETE & Authenticated & Delete an existing Profile \\
+        \hline    
+            /profile/\{id\} & GET & Authenticated & Returns details of an existing Profile \\
+        \hline
+            /profile/search & GET & Authenticated & Enables searching a specific Profile based on a name \\
+        \hline
+        \end{tabularx}
+        \caption{Interfaces of Business Logic Layer}
+        \label{tab:enpoints}
+    \end{table}
+        \subsubsection{Authentication Module}
+        The authentication module manages the User login, via the interface \verb|/login|. It secures all the protected endpoints using JSON Web Tokens (JWT) and role-based access control (RBAC). Requests that read or modify user-owned data (e.g., \texttt{/profile/\{id\}}, \texttt{/profile} - POST, \texttt{/user/role-approval-list}) require a valid JWT Token in the \texttt{Authorization: Bearer} header.
+        
+        Upon successful validation, the decoded identity from the token (email) is used to verify ownership of the resource and user permissions. As a result, normal users can only manage their own profiles, candidates can create profiles if approved, and clients are restricted from profile creation. 
+        
+        The access token contains the encoded user email, a secret key and a encryption algorithm (HS256) used. This token has an expiration time of 30 minutes. 
+
+        Since the application deals with personal data of the User, the only unauthorized endpoints are register \verb| /user/register | and \verb| /login |. 
+        
+        \subsubsection{User Management}
+        The User Management module handles the complete user lifecycle including registration, retrieval, updates, deletion, and role assignment of a User.
+
+        A User needs to create an account in order to access the application and that's enabled via the endpoint \verb| /user/register/|. The User needs to provide Name, Email and Password registering in the system. After successfully creating the account, the User needs to await the role assignment from the \textbf{Admin}. They are by default given a status of  \verb|"waiting"| which is changed to \verb|"approved"| upon a role confirmation from the Admin. The endpoint to view pending approval of roles accessible by \textbf{Admins} only is \verb|GET /user/role-approval-list| and \verb|PATCH /user/{id}/role| for the Admins to assign the roles \textit{admin}, \textit{candidate}, or \textit{client} and hence update their status. 
+
+        Authenticated users can retrieve their information via \verb|GET /user/{id}| and update their details using \verb|PATCH /user/{id}|. User deletion is done via \verb|DELETE /user/{id}| which is also restricted to Admins.
+        
+        \subsubsection{Role-Based Access Control (RBAC)} \label{rbac}
+
+        The Role-Based Access Control (RBAC) module implements a granular authorization system that enforces permission boundaries across all API endpoints based on user roles. The system defines three distinct roles—\textit{admin}, \textit{candidate}, and \textit{client}—each with specific privileges and restrictions mapped to system operations.
+        
+        The authorization model can be divided into three categories: administrative operations (restricted to admins only), user-specific operations (allowed for authenticated users), and public operations (accessible without authentication). Admins possess unrestricted access to all endpoints including user role assignments, profile deletions, and approval workflows. Candidates can create and manage profiles while having read access to their own user data. Clients are restricted to read-only operations, specifically retrieving and searching profiles without creation or modification capabilities.
+        
+        Authorization checks are applied at the endpoint level through role-verification service methods. Each protected endpoint explicitly validates the requester's role against the required permission level before allowing access. For endpoints supporting multiple role levels (e.g., profile updates), the system performs ownership verification to allow users to modify their own resources while restricting cross-user modifications to administrators only. This dual-level authorization (role-based and ownership-based) ensures both categorical and granular permission enforcement.
+        
+        Unauthorized access attempts return appropriate HTTP status codes: \texttt{401 Unauthorized} for authentication failures and insufficient privileges, and \texttt{403 Forbidden} for authorization failures. This clear separation between authentication (verifying user identity) and authorization (verifying user permissions) maintains security boundaries while providing appropriate responses to Users.
+        
+    \begin{table}[H]
+        \centering
+        \caption{Role-Based Access Control Matrix}
+        \label{tab:rbac_matrix}
+        \begin{tabular}{|l|c|c|c|}
+            \hline
+            \textbf{Endpoint} & \textbf{Admin} & \textbf{Client} & \textbf{Candidate} \\ \hline
+            Login & $\checkmark$ & $\checkmark$ & $\checkmark$ \\ \hline
+            User Register & $\checkmark$ & $\checkmark$ & $\checkmark$ \\ \hline
+            Get User & $\checkmark$ & $\checkmark$ & $\checkmark$ \\ \hline
+            role-approval-list & $\checkmark$ & $\times$ & $\times$ \\ \hline
+            Update User Role & $\checkmark$ & $\times$ & $\times$ \\ \hline
+            Search Profile by name & $\checkmark$ & $\checkmark$ & $\times$ \\ \hline
+            Update User & $\checkmark$ & $\checkmark$ & $\checkmark$ \\ \hline
+            Delete User & $\checkmark$ & $\times$ & $\times$ \\ \hline
+            Create a Profile & $\checkmark$ & $\times$ & $\checkmark$ \\ \hline
+            Get all Profile & $\checkmark$ & $\checkmark$ & $\times$ \\ \hline
+            Get a Profile & $\checkmark$ & $\checkmark$ & $\times$ \\ \hline
+            Update Profile & $\checkmark$ & $\times$ & $\checkmark$ \\ \hline
+            Parse Profile & $\checkmark$ & $\times$ & $\checkmark$ \\ \hline
+        \end{tabular}
+        \label{role_matrix}
+    \end{table}
+
+Table \ref{role_matrix} above gives an overview of endpoint accessibility for each user role.
+        
+    \subsubsection{Document Parsing Module} \label{doc_processing}
+        The document parsing module handles couple of things. Firstly, providing an interface for uploading a file by \verb|POST /profile/parse| which accepts the file and reads it in binary mode. After which the file extension is validated against the allowed ones namely, JPG, JPEG, PNG, PDF and PPTX, then it is temporarily stored in a project directory. The file is then picked up and depending on the type of file that was uploaded different services are used to extract the text from them. If the file is of an image type (JPG, JPEG or PNG) then it is read and handled by the library \textit{OPENCV} which then allows \textit{pytesseract} to extract text from it. For PDFs, the module uses \verb|PyPDFLoader| provided by \verb|langchain| and finally for PPTX, a python package is imported.
+        
+    \subsubsection{Llama3.2 Module}
+        The LLM module further processes the text that was extracted with the help of Document Processing Module (\ref{doc_processing}). The extracted text is then normalized and chunked to manage tokens. Later, combining the processed text with a well-defined instructions for LLM, a prompt is constructed. The response from the LLM is converted to a JSON object using LangChain's \verb|JsonOutputParser| that is passed to the \verb|ProfileRepository| which enables saving the Profile in the database. This is one of the more important modules that oversees Profile creation.
+        
+    \subsubsection{Profile Management}
+        The Profile Management is responsible for profile creation-either by inputting the fields manually or through AI assisted parsing, along with deletion, retrieval, updates and search capabilities.
+
+        The Authentication and RBAC modules make sure that only a Candidate or an Admin can create a Profile. As for the Client, the client is allowed to browse through the Profiles, supported by the interface \verb|GET /profile/ |. Also, to help narrow down the Candidates from the list, the search is enabled through \verb|GET /profile/search/|, that queries the database by name.  A profile can only be deleted by the creator of the profile or an Admin via the endpoint \texttt{DELETE /profile/{id}}. 
+    
+    \subsubsection{External Services Integration:}
+        This layer also connects to a few external services to support some core functionalities:
+    \begin{itemize}
+        \item \textbf{Ollama LLM:} Locally run large language model service hosting Llama 3.2b that is responsible for generating a structured response (JSON) from the extracted text from a resume.
+        \item \textbf{OpenCV and Tesseract OCR (Computer Vision Service):} OpenCV is an image processing library for handling the image-based resume files. It reads and prepares for text extraction from various formats like JPG, JPEG, and PNG. Tesseract OCR converts visual document data into machine-readable text for processing and information extraction by the LLM.
+        \item \textbf{LangChain:} It is a library that offers a framework to interact with LLM's, create document processing pipelines, and prompt management. It manages the text pre-processing by splitting the extracted texts into chunks for better token management and context retention for LLM's to process the text.
+    \end{itemize}
+        
+       
+        
+    \subsection{Data Layer}
+    The Data Layer comprises of MongoDB as a document database for structured storage and a Repository Layer that acts as a interface between Business Logic Layer and databases. The database, ProfileDB contains two collections, namely users and candidate. The system is configured to a few environments, \verb|test, dev and prod| following the same structure.
+
+    \subsubsection{Database Repository Layer}
+        All the database transactions that happen in the system are handled by Database Repository Layer. This Layer serves as a medium to interact between the core Business Logic and Data Layer. The idea for this design pattern to be implemented in this application stemmed from the need to improve the code readability and maintainability while also keeping it flexible. The \verb|BaseRepository| serves as a Parent Class for the child classes, \verb|ProfileRepository| and \verb|UserRepository|. The Parent class handles the basic operations while the abstract methods are implemented by the Child classes.
+
+    \subsubsection{Users Collection}
+        The Users collection stores the User personal information along with a couple other fields in a document. The documents contains the following fields:
+        \begin{itemize}
+            \item \verb|id: ObjectId| - An auto generated \& unique identifier for User stored as ObjectId
+            \item \verb|name: string| - User name stored as a String
+            \item \verb|email: EmailStr| - User email stored as a EmailStr, an email type validation provided by \verb|Pydantic|
+            \item \verb|password: str| - User's hashed password stored as a String.
+            \item \verb|role: Optional[str]| - Role of the user also stored as a String.
+            \item \verb|status: Optional[str]| - Status of a User's role approval.
+            \item \verb|profiles: List[Profiles]| - List of Profiles a User has created.
+        \end{itemize}
+    
+    \subsubsection{Profiles Collection}
+        The Profiles collection stores structured candidate profile information extracted either manually or through AI-assisted resume parsing. Each document represents a single candidate profile and contains the following fields:
+        \begin{itemize}
+            \item \verb|id: ObjectId| – An auto-generated and unique identifier for the profile stored as a MongoDB \verb|ObjectId|.
+            \item \verb|name: Optional[str]| – Full name of the candidate stored as a string.
+            \item \verb|contact_number: Optional[str]| – Contact phone number of the candidate, if available.
+            \item \verb|email: Optional[str]| – Email address associated with the candidate profile.
+            \item \verb|skills: List[str]| – A list of technical or professional skills extracted from the resume or provided manually.
+            \item \verb|educations: List[Education]| – A list of education records, where each entry includes details such as institution, degree, location, and study period.
+            \item \verb|work_experiences: List[WorkExperience]| – A list of work experience records, including company name, role, employment period, and location.
+            \item \verb|YoE: Optional[str]| – Total years of professional experience of the candidate, represented as a string.
+            \item \verb|creator: Optional[str]| – Identifier (email) of the authenticated user who created or uploaded the profile.
+        \end{itemize}
+        
+    \subsection{Presentation Layer}
+    The Presentation Layer is responsible for providing the user interface through which users interact with the system. It handles user input, displays application data, and communicates with the backend via RESTful API calls. This layer is implemented using \verb|React.js|, enabling a component-based architecture and efficient state management for a dynamic single-page application.
+    
+    The Presentation Layer does not contain business logic or direct database access. Instead, it focuses on rendering views, managing client-side state, and forwarding authenticated requests to the backend. Authentication is handled using bearer tokens stored on the client side, which are attached to each API request to ensure secure communication.
+    
+    The user interaction flow begins with authentication, after which users are redirected to role-specific views. Depending on the assigned role (Candidate, Client, or Administrator), different functionalities and interfaces are made available. This separation ensures clarity, usability, and adherence to role-based access control principles.
+
+    \subsubsection{Landing View:}
+    The Landing page of the application is the entry point for a User. It allows a registered User to \textit{Login} or \textit{Register}, if they are a first time User.  This makes sure that the application is secure by allowing only the registered Users to access it. This is the only view a logged out user is able to see. The URI for this view is \verb| /landing |.
+
+    \subsubsection{Login \& Register View:}
+
+    \textbf{Log in:} The registered user can click on the \textit{Login} button, which will take them to the resource \verb|/login| and Enter their credentials, namely, email and password. Then proceed to the Home Page \ref{home_page}. 
+
+    \textbf{Register}: An Un-registered User can click on the \textit{Register} button to get registered on the application. They will be navigated to \verb| /register | . The user needs to provide their full name, email id, and password to register. After submitting the registration form, the User needs to wait for the approval by an Admin, who assigns a role to the User.
+
+    \subsubsection{User Management:} 
+    After a user has successfully registered their details, a request is sent in the system to the admin for approval of their role. The Admin then can navigate to the User Management page via the \textit{Admin} button on the navigation bar. Then on the page the Admins can see the list of users who await the approval of their role. The admin can either approve any of the available roles to the User or delete the request. In both the cases a \texttt{PATCH} request is being sent to update the status of User's request, \textit{waiting} or \textit{approved}. A second API call is also triggered to fetch the updated role approval list, \verb| /profile/role-approval-list | - \texttt{GET}.     
+
+    \subsubsection{Home Page:} \label{home_page}
+
+    After a role has been approved for a User, the User is registered and can access the Home Page after logging in the application again. The home page contains dynamically rendered components that depend on Authenticated Users role. For example, the \verb| Admin | button in the navigation bar is only accessible to an Admin, that leads to a User Management view. The home page displays a list of profile cards. The \textit{Create Profile} button is visible to all the Users but only \textit{Admins} and \textit{Candidates} will be able to create one.
+
+    All Authenticated Users are also able to navigate to their account details from the home page, a button for which is present in the navigation bar, labeled \textit{My Account}.
+
+    \subsubsection{Create Profile View}
+    The Create Profile view is accessible to authenticated users with the \textit{Admin} or \textit{Candidate} role and is available at the route \verb|/profile/create|. This view allows authorized users to create candidate profiles using one of two supported methods: manual data entry or AI-assisted profile generation.
+    
+    In the \textit{Manual Entry} mode, users complete a structured form containing personal, educational, and professional information. Upon submission, the data is sent to the backend through the \verb|/profile| \texttt{POST} endpoint, where it is validated and persisted in the database.
+    
+    Alternatively, the \textit{AI Assist} mode enables users to upload a résumé or CV file. The uploaded document is processed by the AI pipeline, which extracts structured information and automatically generates a profile by invoking the \verb|/profile/parse| endpoint.
+    
+    The form used for manual profile creation is reused in the \textbf{Edit Profile} view to ensure consistency and reduce redundancy in the user interface. The Edit Profile view can be accessed in two ways: (1) through the \textit{My Account} view (\ref{my_acc_view}), which displays a list of profiles created by the user along with edit controls, or (2) directly from profile cards displayed on the home page.
+    
+    Profile modification is restricted based on the role-based access control (RBAC) rules defined in the role matrix (Table~\ref{role_matrix}). When a profile is edited, the updated data is submitted to the backend using the \verb|/profile/{id}| \texttt{PATCH} endpoint.
+
+    \subsubsection{My Account View:} \label{my_acc_view}
+    For an Authenticated User, they can navigate to their own account page where they can edit their own account details (name, email or password). If the user has created any profiles, that is also visible on the same page, which they can edit as well. The endpoint that is triggered here is \verb| /user/me |. For showing the profiles that are created by the user and the total count of the profiles, another end point is triggered,  \verb| /profiles/ | \texttt{GET}.
+    
+    \subsection{System Interfaces and Data Flow}
+    The interaction between the frontend and backend is performed through HTTP requests following RESTful API design principles. Client requests include a Bearer access token in the \texttt{Authorization} header, which is attached to each API call to authenticate the user.
+
+    Upon successful authentication, the Business Logic layer processes the incoming data and executes the core application functionalities, such as profile management, search, or document parsing. When required, the processed data is forwarded to the Data Layer to perform database operations. The backend then returns the result of each operation to the front-end in a structured JSON format.
+
+    This stateless communication model ensures scalability and simplifies client–server interaction.
+
+\pagebreak
 
 \section{Implementation}
-Main intersting part of implementation/smart/difficult.
-- snippet - high level
-- avoid exact source code
-- subsections can be similar to architecture.
+The implementation of ReSorcerer follows the modular architecture described in Section 4. In this section we will discuss how some difficult and important features were implemented.
+
+\subsection{Secured Login and Role-Based Access Control (RBAC)}
+
+ReSorcerer makes sure that the user accessing the application is authenticated and authorized user.
+This is done by implementing a custom login and register feature combined with role-based access control (RBAC). When a user logs in, a signed access token is generated in the backend with users email and an expiry time. This token is then attached to each request using the \verb| Authorization: Bearer | header.
+
+The token payload embeds only essential claims to minimize exposure of sensitive data. The token is encoded using  HS256 Algorithm.
+
+\begin{lstlisting}[language=PythonCustom, caption={JWT token payload structure}]
+payload = {
+    "sub": user_email,
+    "exp": expiration_timestamp
+}
+\end{lstlisting}
+
+Authorization is enforced through RBAC checks layered on top of Authentication. User roles (admin, candidate, client) determine which endpoints are accessible. For operations involving user-owned resources (such as profile updates), the system additionally verifies resource ownership, allowing users to modify only their own profiles unless they possess administrative privileges. This combined role-based and ownership-based authorization model ensures both coarse-grained and fine-grained access control.
+
+
+\subsection{Role Approval:}
+The approval for a User's role is decided by the Admin as mentioned in the sub-section \ref{rbac}. The idea for implementing this was made after a very careful consideration. Initially, the User would register to the system and the role was also decided by the user, this would have made the application very vulnerable, which would render the Authorization/Authentication feature moot. But then introducing an approval system routed to Admin makes the application secure.
+
+For implementing this, a field was introduced in the User's document, \texttt{status} with initial value being \verb|"waiting"|. This allows the \verb| GET | endpoint, \texttt{profile/role-approval-list} which fetches the list of all User's with the status as "waiting". After an Admin approves the role, this field is updated to \verb| "approved" |. When logging into the system, the backend checks for this variable and allows a user to login only if their role is approved.
+
+\subsection{File Handling:}
+
+One of the more important and tricky aspects of the system is handling the file (Resume/CV). Depending on what type of file the User uploads (PNG, JPG, JPEG, PPTX, PDF), a different library is invoked to extract the text. 
+
+
+\begin{itemize}
+    \item \texttt{.pdf :} PyPDFLoader
+    \item \texttt{.png, .jpg, .jpeg :} cv (OPENCV) \& pytesseract
+    \item \texttt{.pptx}: pptx (python-based)
+\end{itemize}
+
+\begin{lstlisting}[language=PythonCustom, caption={Detection of file extensions}]
+    if path.endswith(".pdf"):
+        loader = PyPDFLoader(path)
+        pages = loader.load()
+        return pages
+    
+    elif path.endswith(".pptx"):
+        prs = Presentation(path)
+        # extract text from each slide and store it in text_runs
+        return text_runs
+        
+    elif path.endswith(".jpg") or path.endswith(".jpeg") 
+        or path.endswith(".png"):
+            image = cv2.imread(path)
+            text = pytesseract.image_to_string(image)
+            return text
+\end{lstlisting}
+
+In this way, the text is extracted and passed into the prompt for an LLM to be used as a context.
+
+
+% mention in installation
+% Installation guide
+% User guide
+\subsection{Environment Configuration:}\label{env_config} 
+ReSorcerer supports multiple runtime environments, namely development, testing, and production, through a centralized configuration system. The environment can be switched by changing a single variable in the code-base, which makes it easier to manage. 
+
+Environment specific settings are managed by using Inheritance, an object oriented programming (OOP) principle. A parent class defines all the common parameters such as database connection string and names of the collection.  Child configuration classes inherit these shared settings and override or extend them with environment specific values, including items such as the JWT SECRET\_KEY or the database name for a particular environment.
+
+When the environment variable \verb|ENV_STATE| is set to one of the supported values (\textit{dev}, \textit{test}, or \textit{prod}), the application dynamically instantiates the corresponding configuration class. This configuration object is then propagated throughout the application lifecycle, ensuring that all components operate consistently according to the selected environment.
+
+
+\begin{lstlisting}[language=PythonCustom, caption={Object creation for environment configuration}]
+    def get_config(env_state: Optional[str] = None) -> GlobalConfig:
+    print(f"Detecting environment: {env_state}")
+    configs = {
+        "dev": DevConfig,
+        "test": TestConfig,
+        "prod": ProdConfig
+    }
+    return configs[env_state.lower()]()
+\end{lstlisting}
+
+\pagebreak
 \section{Testing}
+The application was thoroughly tested to ensure that the functionalities work as expected and the goal of this thesis is achieved. The testing process included, Unit Testing, integration tests, manual testing and performance testing.
+
+The section will discuss each of them in detail with also about the test environment \ref{env_config} in which these tests were executed.
     \subsection{Test Environment}
+    The tests were executed in the configuration described as below:
+    
+    \textbf{Hardware:}
+    \begin{itemize}
+        \item System Model: Asus ROG Strix G513RC
+        \item Processor: AMD Ryzen(TM) 7 6800H/HS @3.20 GHz
+        \item Graphics: NVIDIA(R) GeForce RTX(TM) 3050
+        \item Memory(RAM): 16GB (8GB * 2) DDR5-4800
+        \item Storage: 512GB PCIe(R) NVMe(TM) M.2 SSD
+    \end{itemize}
+    
+    \textbf{Software:}
+    \begin{itemize}
+        \item Operating System: Windows11 Home64-bit (Build26200)
+        \item Browser for manual testing: Brave
+        \item Backend runtime: pytest 8.4.2 with Python 3.12.7
+        \item Frontend runtime: Vite +React
+        \item Load testing tool: k6 v1.1.0
+    \end{itemize}
+    
+    \textbf{Deployment Environment:}
+    \begin{itemize}
+        \item Application: Both backend and frontend are deployed on Render
+        
+        \verb| https://resorcerer.onrender.com |
+        \item Database: MongoDB Cloud
+    \end{itemize}
+
+    \textbf{Environment Configuration}: 
+    \begin{itemize}
+    \item Environment State: test
+    \item Database Name: ProfileDB\_TEST
+    \end{itemize}
+    
     \subsection{Unit Testing}
+    Unit testing is a software testing method where individual units or components of code—such as functions, methods, or classes—are tested in isolation to verify they work correctly \cite{unit_test}. Unit tests were written to ensure each of the endpoints in the backend and the components on the frontend work as expected.
+
+    \subsubsection{Frontend Unit Tests}
+    Frontend unit tests focus on verifying the individual components and pages in isolation to ensure they behave as intended, follow the rendering logic, role-based access control, form validation and user interaction. They are implemented using the \textbf{Vitest} as the test runner and assertion library. Primary reason to choose this as the test runner was its compatibility and re-usability with the \textit{Vite} \verb|config| used for development of frontend \cite{vitest}. It also uses \textbf{React Testing Library} for component rendering ans user-centric DOM queries.
+
+  
+  The list below describes the frontend component and pages covered by the unit tests:
+
+    \begin{itemize}
+        \item \verb|ProfileDetail| Page (1 test) – Validates that the “Edit Profile” action is conditionally rendered when the logged-in user is the creator of the profile, ensuring correct role-based access control for candidates.
+        \item \verb|EditProfile| Page (1 test) – Ensures that an authorized candidate can access the edit page and that the profile edit form is correctly prefilled with existing profile data retrieved from the API.
+        \item \verb|CreateProfile| Page (1 test) – Verifies that users with a client role are prevented from creating profiles and are shown an appropriate permission error message.
+        \item \verb|LandingPage| (1 test) – Confirms that the list of profiles is rendered correctly when profile data is successfully fetched from the backend API.
+        
+        \item \verb|AccountPage| (1 test) – Checks that admin-specific sections and actions are displayed when an administrator accesses their account page, including user identification details.
+        \item \verb|AdminUsers| Page (1 test) – Validates administrative functionality by ensuring that an admin user can assign a role to a waiting user and that the correct API call is triggered upon interaction.
+        \item \verb|Login| Page (1 test) – Ensures that submitting valid login credentials results in the authentication context being updated via the login method, confirming correct interaction between the UI and authentication logic.
+        \item \verb|Navbar| Component (2 tests) – Verifies conditional navigation rendering by checking that login and registration links are shown to unauthenticated users, while admin-specific links are visible only to administrators.
+        \item \verb|Landing| Component (1 test) – Confirms that clicking the login button triggers navigation to the login page, validating correct routing behavior for entry-level user actions.
+        \item \verb|ProfileCard| Component (1 test) – Ensures that basic profile information such as name and skills is rendered correctly when profile data is provided as props.
+        \item \verb|EditAccountModal| Component (1 test) – Validates that submitting updated account information triggers the success callback, confirming proper form submission and API interaction handling.
+        \item \verb|Register| Page (1 test) – Ensures that client-side validation is enforced by displaying an error message when the password and confirmation password fields do not match.
+    \end{itemize}
+
+    
+    
+    
+    \subsubsection{Backend Unit Tests}
+    The tests in the backend of the application utilizes pytest which is a framework built in python. The pytest framework makes it easy to write small, readable tests, and can scale to support complex functional testing for applications and libraries \cite{pytest}.
+    Each of the endpoints were mocked with test data, in a separate database so that the \textit{'dev'} environment is not affected.
+    
+    \textbf{Authentication}:
+    \begin{itemize}    
+        \item \verb|POST /login| (3 tests) - validated the user login after a user has been created.
+        \item \verb|POST /register| (2 tests) - validated successful registration of a new user with initial status set to \texttt{waiting} and registering with a duplicate email.
+    \end{itemize}   
+    
+    \textbf{User}:
+    \begin{itemize} 
+        \item \verb|GET /user/role-approval-list| (2 Test) - validate that an admin can retrieve a list of users waiting for their pending approval.
+        \item \verb|PATCH /user/{id}/role| (2 test) - Validate that the role of an existing user can be updated but not for a non-existent user.
+        
+        \item \verb|GET /user/me| (2 tests) - Validate that the details of the current user can be fetch but not for a unauthenticated user. 
+        \item \verb|PATCH /user/{id}| (2 tests) - Validate that a users details can be updated.
+        \item \verb|DELETE /user/{id}| (2 tests) - Validate that a user can be deleted only by an admin
+        \end{itemize} 
+        
+    \textbf{Profile}:
+    \begin{itemize} 
+        \item \verb|GET /profile/| (1 test) - Ensure that all authorized users the created profiles are fetched.
+        \item \verb|GET /profle/{id}| (2 tests) - Validate the a profile that exists can be fetched.
+        \item \verb|POST /profle/| (2 tests) - Ensure that only authorized users (Admin \& Candidate) can create a profile manually.
+        \item \verb|POST /profle/parse| (2 tests) - Ensure that only authorized users (Admin \& Candidate) can create a profile with AI Assist feature.
+        \item \verb|PATCH /profle/{id}| (2 tests) - Validate that only an authorized user can update a profiles details. 
+        \item \verb|DELETE /profle/{id}| (2 tests) - Verifies that only admins and owner of the profiles can delete the profile.
+        \item \verb|GET /profile/search| (1 test) - Ensure that all authenticated users can search a candidate with valid query parameters.
+    \end{itemize}
+    
     \subsection{Integration Testing}
+    Integration testing focuses on verifying the correct interaction between multiple system components, ensuring that individual modules work together. In layman terms, these tests validate the integration of the application with all the parts that live outside of the application \cite{int_test}. 
+
+    In this application, the tests were written to verify the data being saved in the database by creating and retrieving data, frontend-to-backend communication paths, user authentication and authorization journey. A total of \textbf{10} integration tests were written to cover most critical paths.
+    
+\textbf{Integration Test Scenarios}
+
+\begin{itemize}
+    \item \textbf{/user/register, /login} (3 tests):  
+    Validate the complete user authentication flow, including user registration, successful login with valid credentials, and appropriate error handling for invalid login attempts.
+
+    \item \textbf{/login, /user/me} (1 test):  
+    Verify that an authenticated user can retrieve their own profile information using a valid access token, ensuring correct token validation and user context resolution.
+
+    \item \textbf{/profile (POST, GET)} (3 tests):  
+    Ensure that authenticated users can create a profile and subsequently retrieve it from the system. These tests validate request authorization, data persistence, and correct response. The tests verify both the method of profile creation (manual and AI assisted). 
+
+    \item \textbf{/profile, Frontend Landing Page} (1 test):  
+    Validate the integration between the backend profile listing endpoint and the frontend landing page, ensuring that profiles retrieved from the API are correctly rendered in the user interface.
+
+    \item \textbf{/profile/{id}, Frontend Profile Detail Page} (1 test):  
+    Verify that profile details fetched from the backend are correctly displayed on the profile detail page, including conditional UI elements based on the authenticated user's role.
+
+    \item \textbf{Get Users Awaiting Approval list, Update User's Role} (1 test):  
+    Validate the administrative workflow where an admin retrieves a list of users awaiting role approval and successfully updates a user's role, ensuring proper authorization and state changes.
+\end{itemize}
+
     \subsection{Performance Testing}
+    Performance testing is a type of testing that ensures that the application works properly under the expected workload \cite{perf_test}. It validates one of the non-functional requirements \ref{perf_req} of this thesis. 
+
+    \subsubsection{Lighthouse}
+    The performance of a page in ReSorcerer is tested by \textbf{Lighthouse}.  It performs a series of audits against the page and then generates a report on how well the page performed \cite{lighthouse}. Lighthouse runs audits in four categories: Performance, Accessibility, Best Practice, and SEO audits. The results of these audits are provide on a scale of 1-100. It covers a single user performance tests for the application. 
+    
+    \begin{itemize}
+        \item \textbf{Performance Scoring}: This includes metrics like First Contentful Paint (FCP), Speed Index, Largest Contentful Paint (LCP), Time to Interactive (TTI), Total Blocking Time (TBT), and Cumulative Layout Shift (CLS). These metrics measure how fast your page loads and becomes interactive \cite{lighthouse_metrics}.
+
+        \item \textbf{Accessibility Scoring}: Lighthouse checks for elements like proper use of ARIA labels, color contrast, alt text for images, and keyboard navigation. These factors are crucial for ensuring that all users, including those with disabilities, can access your website \cite{lighthouse_metrics}.
+
+        \item  \textbf{Best Practices Scoring}: This includes checks for security vulnerabilities (such as using HTTPS), modern JavaScript practices, and more \cite{lighthouse_metrics}.
+        
+        \item  \textbf{SEO Scoring}: Lighthouse assesses basic SEO practices, including meta descriptions, use of header tags, mobile friendliness, and more \cite{lighthouse_metrics}.
+    \end{itemize}
+
+    The table below shows the scores from each audit for the pages tested:
+    \begin{table}[h]
+        \centering
+        \begin{tabular}{|l|c|c|c|c|}
+        \hline
+        \textbf{Page} & \textbf{Performance} & \textbf{Accessibility} & \textbf{Best Practices} & \textbf{SEO} \\
+        \hline
+        Landing Page & 80 & 86 & 100 & 91 \\
+        Homepage & 80 & 90 & 100 & 92 \\
+        Account Page & 85 & 93 & 96 & 92 \\
+        Create Profile Page & 80 & 90 & 100 & 92 \\
+        \hline
+        \end{tabular}
+        \caption{Frontend Performance Evaluation using Lighthouse}
+        \label{tab:frontend-performance}
+    \end{table}
+
+    From the above scores we can observe that overall performance ranges between 80-85 indicating acceptable load times for Single Page Application (SPA). ReSorcerer follows Best Practices (96-100) to secure the application and indicates well-structured architecture. SEO score remains almost consistent (91-92) making this website easier to find and keeping mobile friendly.
+
+    \subsubsection{Grafana k6} \label{k6}
+To evaluate the system under multi-user conditions, Grafana k6 was used as the primary load and performance testing tool. Grafana k6 is an open-source framework designed for testing the performance of APIs, microservices, and web applications~\cite{k6_doc}. The tool operates using the concept of \textit{virtual users (VUs)}, where each virtual user executes a predefined test script to simulate concurrent user behavior~\cite{k6_gfg}.
+
+Three frequent and important API endpoints were tested , in which for Non-API endpoints, 200 VU's were used to assess scalability for a duration of 30s. For AI-assisted endpoint \verb|/profile/parse|, only 9 VUs were used for a duration of 1m30s due to the computationally intensive nature of a Large Language Model{LLM} processing.
+
+The list of metrics recorded by Grafana k6 is presented below:
+\begin{itemize}
+\item \textbf{http\_req\_duration (ms)}: Total time taken to complete an HTTP request, including sending, waiting, and receiving phases.
+\item \textbf{Average (avg)}: The mean request duration across all executed requests.
+\item \textbf{Median (p50)}: The request duration below which 50\% of the requests were completed.
+\item \textbf{p(95)}: The 95th percentile of request duration, indicating that 95\% of requests completed within this time threshold.
+\item \textbf{Rate (req/s)}: The number of HTTP requests processed per second, representing the applied system load.
+\end{itemize}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|l|c|c|c|c|}
+    \hline
+    \textbf{Endpoint} & \textbf{VUs} & \textbf{Throughput (req/s)} & \textbf{Avg. Latency (ms)} & \textbf{p95 Latency (ms)} \\
+    \hline
+    GET /profiles        & 200 & 167.77 & 171   & 698   \\
+    POST /profile        & 200 & 98.00  & 965   & 1370  \\
+    POST /profile/parse  & 9   & 0.15   & 27000 & 49000 \\
+    \hline
+    \end{tabular}
+    \caption{Backend API Performance Evaluation using Grafana k6}
+    \label{tab:backend-performance}
+\end{table}
+
+The performance evaluation results demonstrate that all non-AI API endpoints satisfy the defined performance requirements under concurrent load. The \texttt{GET /profiles} and \texttt{POST /profile} endpoints maintained average response times below 1 second with high throughput at 200 virtual users, fulfilling NF1.2 and NF1.3.
+
+In contrast, the \texttt{POST /profile/parse} endpoint exhibits significantly higher latency, with an average response time of approximately 27 seconds and a 95th percentile of 49 seconds. This behavior is expected due to the computationally intensive nature of large language model (LLM)-based resume parsing, which involves document processing, text extraction, and inference. Despite the increased latency, the endpoint remains within the defined requirement of completing AI-assisted resume parsing within 60 seconds (NF1.1) and demonstrates stable behavior under controlled concurrent load.
+
+Overall, the results confirm that the system is performant for standard operations while appropriately handling the higher computational cost associated with AI-driven functionality.
+
+
+    
     \subsection{Manual Testing}
+    Apart from automated unit tests and performance tests, ReSorcerer was also manually tested for both backend and frontend to ensure correctness of API responses, usability and responsiveness of the website. Following methods were included for this:
+    \begin{itemize}
+        \item Postman: A popular API build, design and testing tool was used to verify API responses
+        \item    Cross Browser Testing: Different browsers like Chrome, Brave and Edge were used to test consistency in responsiveness.
+        \item  Peer testing: ReSorcerer was improved by comments made by academic peer, students and friends .
+        \item Multi-Platform Testing: The application was tested on desktop (Windows) and mobile devices.
+        \item  Exploratory Testing: This was done by providing random inputs in forms, unsupported file types during a file upload and so on.   
+    \end{itemize}
+    
     \subsection{Requirements Validation}
+All the functional \ref{func_req} and non-functional \ref{non_func_req} requirements  outlined in chapter 2 are achieved by developing the system features with keeping in mind the best practices and testing them through both automated and manual tests. 
+\paragraph{\textbf{Functional Requirements}:}
+\begin{itemize}
+    \item \textbf{F1. User Authentication}: This was acheived by implementing JSON Web Tokens (JWT) which were tested in client-side and server-side unit tests.
+    \item \textbf{F2. Profile Management:} The creation (manual and AI assisted), update, delete  and read (CRUD) functionalities of Profile were tested by backend unit test, integration test with external services and manual frontend testing.
+    \item   \textbf{F3. Search Functionality}: Querying the Profiles by name was tested by unit and integrations tests implemented on the backend.
+    \item \textbf{F4. Admin Functionalities}: Admin role was validated manually and by unit tests  for profile creation, viewing and updating users role approval, and modifying profiles in the system.
+\end{itemize}
+
+\paragraph{Non-Functional Requirements:}
+\begin{itemize}
+    \item \textbf{NF1. Performance}: Resume parsing using a file takes  maximum of  just under 60 seconds (\~57s) under high stress and about 6-10 seconds under normal load.
+This was made possible by chunking the extracted data before providing it to an LLM.
+
+Remaining non-AI API endpoints perform really well under stress with maximum of 1.6 seconds and with 95\% of time just under 700ms(<800ms) under high stress (200 concurrent users).
+\item \textbf{NF2. Scalability}: A modular architecture has been implemented for easy replacement of services and modules. The system is horizontally scalable due to usage of MongoDB which is a NoSQL database which is known for this very feature.
+\item \textbf{NF3. Responsive UI}: The system is responsive on desktop, tablet and mobile devices which was validated by manually testing the website on such devices.
+\item \textbf{NF4. Usability}:  The UI is made intuitive by providing appropriate messages on error or restricted access. The file upload component specifies all required details for the upload.
+\item \textbf{NF5. Reliability}: The documents are temporarily stored safely in a database which is cleaned after a certain amount of time.
+\item \textbf{NF6. Security}: This was validated by implementing encrypted tokens and RBAC in the backend and \verb|ProtectedRoutes| in the frontend.
+\item \textbf{NF7. Maintainability}: The code-base follows certain design principles like Repository pattern with inheritance to ensure extension and easy modification supporting future development. 
+\item \textbf{NF7. Availability}: The system has never faced downtime except which was validated by stress and manual testing.
+\end{itemize}
     \subsection{Summary of Testing}
+    ReSorcerer was validated using extensive testing methods including unit, integration, performance and manual tests. Frontend unit tests verified the components and backend unit tests tested the modules in isolation. Integrations tests confirmed the incorporation of different modules and components. Performance testing using Lighthouse and Grafana k6 validated that the system is responsive and reliable under normal and high-load conditions. ReSorcerer seems to have performed better than the set target in the requirements. Manual testing further validated the usability, cross-platform compatibility. In conclusion, the testing which was carried out assisted in fulfilling both our functional and non-functional objectives.
+ \pagebreak   
 
 \section{Conclusion}
     \subsection{Summary}
+    ReSorcerer was designed and implemented to help automate the recruiting process for both the resource managers and the client. The intended users of this application are able to manage profiles, view, browse and search for profiles easily, generate new profiles either by manual data entry or uploading a resume. All of this is wrapped under a layer of authentication and approval process that makes sure that no unintended user is able to access the application. With the role-based access control implemented to certain interfaces and components of the application, only the authorized user can approach them accordingly. The system was thoroughly tested by both manual and automated test to ensure that it meets all the functional and non-functional requirements. A series of performance tests on API endpoints and the frontend ensure that the system is reliable.   
+
+    The system uses modern tools like FASTApi, React, MongoDB (FARM) architecture. It leverages a Large Language Model's (LLM) capabilities to understand and automate the complex language-based task such as in this instance.  
     \subsection{Challenges Faced}
+    While developing this solution, there were some technical and architectural challenges faced and they were addressed with some careful considerations. 
+    \begin{enumerate}
+        \item First challenge was an unfamiliarity of working with Llama AI. Since Llama can be locally installed and be also accessed via the cloud API, setting it up and integrating it within the code required referencing their official documentation \cite{llama_docs}. After that it was pretty easy to learn how to make an effective prompt. The prompt also required some dynamic variables in order to cater to some edge cases like, \textit{when a candidate puts their experience from a certain date/time to \textbf{present}, in that case the \textbf{present} should be converted to the latest date and added to the prompt}.  
+
+        \item Another challenge was handling the different resume formats and the file upload functionality. Since the system intended to allow multiple types of file upload, extracting text from each of the file type needed a different library. That meant introducing the check of a file type and testing the text quality obtained by using each of them.
+
+        \item The third Challenge was testing the performance of the application. The frontend was tested for its responsiveness and SEO optimization. While the backend endpoints were load tested using Grafana k6 \ref{k6}. One of the more delicate endpoints to be tested was the AI backed interface as that endpoint is relatively slow due to more obvious reasons.
+    \end{enumerate}
+        
+    
     \subsection{Future Work}
+    ReSorcerer meets all of its current requirements and is a fully functional platform, however few improvements can be augmented in the future to further enhance the system, such as:
+    \begin{enumerate}
+        \item \textbf{Image extraction from the Resumes}: Presently, ReSorcerer only supports extraction of text from the resume. The profiles can be enhanced by adding a feature that extract the profile photos of the candidates from the documents, if present, to help improve the visualization of them.
+
+        \item \textbf{Chat Feature}: Even though a candidates contact information is presented in a generated/created profile, to allow a smoother recruiting experience a \textit{chat feature} can be implemented that lets the client and candidate communicate without leaving the platform.
+
+        \item \textbf{Bookmark}: Allowing the clients to be able to shortlist a few candidates by bookmarking their profiles, with whom they can either get in touch with or review later for future opportunities.
+    \end{enumerate}
+
 \appendix
-    Store pointer to the source code, table, figures, pointer to User guide (could be in github), Installation guide.
-Define extra section: Dictionary.
+Upload installation guides and user guides in apd. All in .pdf format and Test Data: Anonymize 3 resumes and add in the github repo  
 \cleardoublepage % Zaczynamy od nieparzystej strony
-\printbibliography
+% \printbibliography
 \listoffigures
 \listoftables
+
 
 \end{document}

@@ -97,19 +97,24 @@ const AccountPage = () => {
           </div>
         )}
 
-        {userProfiles.length > 0 && (
-          <div className="account-profiles">
-            <h2>My Profiles</h2>
+        <div className="account-profiles">
+  <h2>My Profiles</h2>
+
+  {loading ? (
+    <div className="profiles-skeleton">
+      <div className="skeleton-item" />
+      <div className="skeleton-item" />
+      <div className="skeleton-item" />
+    </div>
+  ) : 
+          userProfiles.length > 0 ? (
             <div className="profiles-list">
               {userProfiles.map((profile) => (
                 <div key={profile.id} className="profile-link-wrapper">
-                  <Link
-                    to={`/profile/${profile.id}`}
-                    className="profile-link"
-                  >
+                  <Link to={`/profile/${profile.id}`} className="profile-link">
                     <div className="profile-link-content">
                       <h3>{profile.name || 'Unnamed Profile'}</h3>
-                      {profile.skills && profile.skills.length > 0 && (
+                      {profile.skills?.length > 0 && (
                         <p className="profile-skills">
                           {profile.skills.slice(0, 3).join(', ')}
                           {profile.skills.length > 3 && '...'}
@@ -132,8 +137,11 @@ const AccountPage = () => {
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <p className="no-profiles">No profiles created yet.</p>
+          )}
+        </div>
+
 
         {isAdmin && (
           <div className="account-admin-section">
