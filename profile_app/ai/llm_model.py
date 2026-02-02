@@ -23,21 +23,32 @@ def get_current_datetime_str():
 
 def get_prompt():
     return """
-        You are an AI model with excellent skills in extracting information for a profile based on the fields, format and text below:
-        Strict JSON format:
-        Format: {FORMAT}
-        Text: {CONTEXT}
-    - Do not make up any information, leave the field empty if information is not present and not explicit.    
-    - Answer in JSON format. No further explanation nor natural language outside of JSON can be present. 
-    - Do not include any other information.
-    - Do not give any other information except the JSON object.
-    - Give the output without any escape characters and only in JSON format.
-    - For Skills: Provide a list of skills mentioned in the text and provide a few additional skills relevant to the mentioned Work Experience(s). If no Work Experience is mentioned, only stick to the skills mentioned in the text.
-    - For YoE: Provide the Years of Experience as a a float value only based on the Work Experience(s) mentioned in the text. If no Work Experience is mentioned, leave it empty.
-    - For any date format, use a string format only. If encountered with present for an end date, use {CURRENT_DATE} as the end date.
-    - Any date field should stricly be in either of the formats: "YYYY-MM-DD" or "YYYY/MM/DD" or "Month YYYY" or "Month DD, YYYY", but keep all the dates in concsistent format in the output JSON.
-    - For Contact Number: Provide only numbers without any special characters or spaces.
-    For role: Extract information from text or leave it empty if not present.
+        You are an expert resume parser. Your task is to extract relevant information from the given text according to the specified format.
+        Specifically, extract the following fields:
+        - Name: Name of the Canidate
+        - Email: The candidate's email address
+        - Phone: The candidate's phone number, including country code if present
+        - College/School (output as "institution")
+        - Degree
+        - Start Date of Education: in dd/mm/yyyy format. If the resume does not provide the day or month, default the missing parts to "01". If you encounter Present then use the current date, i.e. {CURRENT_DATE}.
+        - End Date of Education: in dd/mm/yyyy format. If the resume does not provide the day or month, default the missing parts to "01". If you encounter Present then use the current date, i.e. {CURRENT_DATE}.
+        - Location
+        - Skills: A list of relevant skills mentioned in the text. Extract the skills only from the skills section if present, else derive from the entire text. Add a few additional relevant skills based on the Work Experience(s) mentioned in the text.
+        - YoE: Total Years of Experience as a float value.
+        - Company
+        - Start Date: in dd/mm/yyyy format. If the resume does not provide the day or month, default the missing parts to "01". If you encounter Present then use the current date, i.e. {CURRENT_DATE}.
+        - End Date: in dd/mm/yyyy format. If the resume does not provide the day or month, default the missing parts to "01". If you encounter Present then use the current date, i.e. {CURRENT_DATE}.
+        Location
+        - Role: Extract ONLY the job title (e.g., "Data Engineer", "Software Developer", "Project Manager"). Do NOT include project information or descriptions in this field - just the official job title.
+        FOR EXPERIENCE, IMPORTANT: Create only ONE entry per company, even if the person worked on multiple projects or had multiple roles at the same company. If there were multiple positions at the same company, use the most senior or most recent role in the Role field. The earliest start date and the latest end date should be used for the company's overall employment period.
+        
+        If any of these fields are not present in the resume, return null for that field
+
+        Return your output as a JSON object with the below schema. 
+        {FORMAT}
+
+        Text:
+        {CONTEXT}
     """
 
 def extract_with_llm(file_path) -> dict:
