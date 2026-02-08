@@ -8,7 +8,8 @@ from pymongo.collection import Collection
 from profile_app.database.repositories.base_repository import BaseRepository
 from profile_app.models.request_models import ProfileModel
 
-
+import logging
+logger = logging.getLogger(__name__)
 class ProfileRepository(BaseRepository[ProfileModel]):
     """
     Repository for managing profile/candidate entities.
@@ -84,7 +85,7 @@ class ProfileRepository(BaseRepository[ProfileModel]):
         """
         return await self.exists({"creator": creator_email})
 
-    async def search_by_name(self, name: str, limit: int = 10) -> List[Dict[str, Any]]:
+    async def search_profiles(self, query: str, limit: int = 10) -> List[Dict[str, Any]]:
         """
         Search profiles by name using regex (case-insensitive).
 
@@ -97,13 +98,23 @@ class ProfileRepository(BaseRepository[ProfileModel]):
         """
         try:
             # Use a proper regex filter with case-insensitive option
-            regex_filter = {"$regex": name, "$options": "i"}
-            cursor = self.collection.find({"name": regex_filter}).limit(limit)
+            regex_filter = {"$regex": query, "$options": "i"}
+            search_aggregrtion_pipeline = {
+                                            "$or": [
+                                                {"name": regex_filter},
+                                                {"skills": regex_filter},
+                                                {"\"educations.degree\"": regex_filter},
+                                                {"\"educations.institution\"": regex_filter},
+                                                {"work_experiences.role": regex_filter},
+                                                {"work_experiences.company": regex_filter}
+                                            ]
+                                        }
+            cursor = self.collection.find(search_aggregrtion_pipeline).limit(limit)
             docs = await cursor.to_list(length=limit)
-            print(f"Found {len(docs)} profiles matching name: {name}")
+            logger.info(f"Found {len(docs)} profiles matching query: {query}")
             return self._convert_objectid_list(docs)
         except Exception as e:
-            print(f"Error searching profiles by name: {e}")
+            print(f"Error searching profiles by query: {e}")
             return []
     
     async def update_profile(self, id: str | ObjectId, profile: ProfileModel) -> Optional[Dict[str, Any]]:

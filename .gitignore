@@ -11,3 +11,6 @@
 /logs/
 /data/
 frontend/src/tests/perf/observation.md
+*.pptx
+*.doc
+*.jpg

@@ -60,18 +60,18 @@ async def create_profile(
     raise HTTPException(status_code=400, detail="Failed to create profile")
 
 @router.get('/search', status_code=200, response_model=ProfilesListResponse)
-async def get_profile_by_name(
+async def get_profiles_by_search(
     query: str,
     response: Response,
     profile_repo: Annotated[ProfileRepository, Depends(get_profile_repository)]
 ):
     # search_by_name is synchronous (uses PyMongo) so call it directly
     logger.info(f"Searching profiles with name: {query}")
-    profiles = await profile_repo.search_by_name(query)
+    profiles = await profile_repo.search_profiles(query)
     # Validation
     if not profiles:
         response.status_code = status.HTTP_404_NOT_FOUND
-        raise HTTPException(status_code=404, detail=f"Profile with name: {query} not found")
+        raise HTTPException(status_code=404, detail=f"Profile with query: {query} not found")
     profiles = [ProfileResponse(**profile) for profile in profiles]
     return ProfilesListResponse(total_count=len(profiles), profiles=profiles)
 
