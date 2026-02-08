@@ -49,7 +49,7 @@ const Navbar = () => {
           <form onSubmit={handleSearch} className="navbar-search">
             <input
               type="text"
-              placeholder="Search profiles..."
+              placeholder="Search profiles by name, skills, role, university..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="navbar-search-input"
