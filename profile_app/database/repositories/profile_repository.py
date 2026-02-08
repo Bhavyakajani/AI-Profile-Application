@@ -103,8 +103,8 @@ class ProfileRepository(BaseRepository[ProfileModel]):
                                             "$or": [
                                                 {"name": regex_filter},
                                                 {"skills": regex_filter},
-                                                {"\"educations.degree\"": regex_filter},
-                                                {"\"educations.institution\"": regex_filter},
+                                                {"educations.degree": regex_filter},
+                                                {"educations.institution": regex_filter},
                                                 {"work_experiences.role": regex_filter},
                                                 {"work_experiences.company": regex_filter}
                                             ]
