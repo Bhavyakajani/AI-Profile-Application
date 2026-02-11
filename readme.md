@@ -12,7 +12,8 @@ A guide for understanding the project structure.
   |--- models # database models that works as request and response types as well
   |--- routers # API endpoints 
   |--- database # database repository classes
-  |--- config.py # configurations for setup 
+  |--- config.py # configurations for setup
+  |--- app.py # starting point of the application
 ```
 
 # Installation Guide
