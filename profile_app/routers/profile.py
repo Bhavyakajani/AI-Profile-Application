@@ -108,7 +108,7 @@ async def update_profile(
     profile_dict  =await profile_repo.find_by_id(id)
 
     is_admin = user_service.is_user_admin(logged_in_user)
-    is_owner = profile_dict["email"] == current_user.email
+    is_owner = profile_dict["creator"] == current_user.email
     if not (is_admin or is_owner):
         raise HTTPException(status_code=401, detail="Unauthorized access")
 
